@@ -1,0 +1,905 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tuition Wala</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Inter:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Dark navy and gold is the brand. Light is an optional theme chosen in Settings. */
+:root{
+  --bg:#0B1426; --card:#14213D; --card2:#1B2B4D; --text:#F4EFE6; --muted:#9AA6BF;
+  --gold:#C9A24B; --gold-hi:#E8CF8F; --gold-a:#E8CF8F; --gold-b:#C9A24B; --gold-ink:#0B1426; --gold-text:#E8CF8F;
+  --line:rgba(201,162,75,.20); --line-strong:rgba(201,162,75,.52);
+  --ok:#3FB68B; --due:#E5635B; --shadow:0 18px 40px rgba(0,0,0,.35);
+  --glass:rgba(11,20,38,.82); --track:rgba(244,239,230,.09); --field:rgba(244,239,230,.04); --glow:rgba(201,162,75,.11);
+  --serif:'Playfair Display','Hind Siliguri',Georgia,serif;
+  --sans:'Inter','Hind Siliguri',system-ui,-apple-system,'Segoe UI',sans-serif;
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+:root[data-theme="light"]{
+  --bg:#F6F1E7; --card:#FCFAF5; --card2:#F1EADB; --text:#14213D; --muted:#5E6A86;
+  --gold:#A8842F; --gold-hi:#8A6A1F; --gold-a:#D9B964; --gold-b:#B08A32; --gold-ink:#1A1405; --gold-text:#8A6A1F;
+  --line:rgba(20,33,61,.12); --line-strong:rgba(168,132,47,.6);
+  --ok:#1E8E66; --due:#C9443B; --shadow:0 14px 30px rgba(20,33,61,.12);
+  --glass:rgba(246,241,231,.88); --track:rgba(20,33,61,.09); --field:rgba(20,33,61,.035); --glow:rgba(168,132,47,.12);
+  color-scheme:light;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);background:var(--bg)}
+*{box-sizing:border-box;margin:0;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(900px 440px at 75% -120px,var(--glow),transparent 70%),var(--bg);background-attachment:fixed;color:var(--text);font:400 15px/1.5 var(--sans);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html[lang="bn"] body{font-family:'Hind Siliguri','Inter',system-ui,sans-serif;line-height:1.65}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:2px solid var(--gold-hi);outline-offset:2px}
+.ic{flex:none;display:block}
+.num{font-variant-numeric:lining-nums tabular-nums}
+.muted{color:var(--muted)}
+.serif{font-family:var(--serif)}
+
+/* layout */
+.app{min-height:100vh}
+.rail{display:none}
+.col{max-width:1040px;margin:0 auto;padding:0 18px 130px;width:100%}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 0 12px;background:linear-gradient(var(--bg) 72%,transparent)}
+.t-left{display:flex;align-items:center;gap:12px;min-width:0}
+.t-left h2{font:600 26px/1.15 var(--serif);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.t-right{display:flex;align-items:center;gap:8px}
+.mini-seal{width:34px;height:34px;flex:none}
+.iconbtn{width:40px;height:40px;border-radius:50%;border:1px solid var(--line-strong);display:grid;place-items:center;color:var(--gold-text);transition:transform .18s cubic-bezier(.3,1.7,.5,1),background .2s}
+.iconbtn:active{transform:scale(.9)}
+.langpill{height:36px;padding:0 12px;border-radius:999px;border:1px solid var(--line-strong);font-size:13px;font-weight:600;color:var(--gold-text)}
+.chip-pro{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 12px;border-radius:999px;font-size:13px;font-weight:600;border:1px solid var(--line-strong);color:var(--gold-text)}
+.chip-pro.free{background:linear-gradient(135deg,var(--gold-a),var(--gold-b));color:var(--gold-ink);border-color:transparent;position:relative;overflow:hidden}
+.avatar{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;flex:none;font:600 14px var(--serif);color:var(--gold-text);background:var(--card2);border:1px solid var(--line-strong)}
+.avatar.lg{width:54px;height:54px;font-size:20px}
+
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;display:flex;justify-content:space-around;padding:8px 8px calc(8px + env(safe-area-inset-bottom,0px));background:var(--glass);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--line)}
+.tab{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:62px;padding:6px 8px;font-size:11px;font-weight:500;color:var(--muted);transition:color .2s}
+.tab .ic{transition:transform .35s cubic-bezier(.3,1.8,.5,1)}
+.tab.on{color:var(--gold-text)}
+.tab.on .ic{transform:translateY(-2px) scale(1.12)}
+.tab.on::before{content:"";position:absolute;top:-9px;width:22px;height:2px;border-radius:2px;background:var(--gold)}
+
+@media(min-width:900px){
+  .app{display:grid;grid-template-columns:250px 1fr}
+  .rail{display:flex;flex-direction:column;gap:6px;position:sticky;top:0;height:100vh;padding:30px 18px;border-right:1px solid var(--line)}
+  .rail .brand{display:flex;align-items:center;gap:12px;margin-bottom:26px;font:600 21px var(--serif)}
+  .rail .tab{flex-direction:row;gap:12px;width:100%;padding:12px 14px;border-radius:14px;font-size:14px;justify-content:flex-start}
+  .rail .tab.on{background:var(--card);box-shadow:inset 0 0 0 1px var(--line)}
+  .rail .tab.on::before{display:none}
+  .rail .tab.on .ic{transform:none}
+  .tabs{display:none}
+  .col{padding:0 44px 60px}
+  .mini-seal{display:none}
+}
+
+/* ledger motif: double rule frame */
+.ledger{position:relative;background:linear-gradient(160deg,var(--card2),var(--card));border:1px solid var(--line-strong);border-radius:22px;box-shadow:var(--shadow)}
+.ledger::after{content:"";position:absolute;inset:6px;border:1px solid var(--line);border-radius:16px;pointer-events:none}
+.pad{padding:24px}
+h3.sec{font:600 20px/1.3 var(--serif);margin:34px 0 12px}
+h3.sec:first-child{margin-top:8px}
+.secrow{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
+.secrow h3.sec{margin:34px 0 12px}
+.link{color:var(--gold-text);font-weight:600;font-size:14px}
+
+/* hero */
+.hero{display:grid;grid-template-columns:1fr auto;gap:18px;align-items:center;margin-top:6px}
+.hello{font:500 15px var(--sans);color:var(--muted);margin-bottom:2px}
+.big{font:600 clamp(40px,11vw,60px)/1.05 var(--serif);color:var(--gold-text);letter-spacing:-.5px;font-variant-numeric:lining-nums tabular-nums;margin:2px 0 4px}
+.ringbox{position:relative;width:118px;height:118px}
+.ringbox .pct{position:absolute;inset:0;display:grid;place-items:center;font:600 24px var(--serif);font-variant-numeric:lining-nums}
+.ring-bg{stroke:var(--track)}
+.ring-fg{stroke:url(#gold);transition:stroke-dashoffset 1.3s cubic-bezier(.2,.8,.2,1) .15s}
+.pills{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.pill{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;font-size:13px;font-weight:500;border:1px solid var(--line)}
+.pill.due{color:var(--due);border-color:color-mix(in srgb,var(--due) 45%,transparent)}
+.pill.ok{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.two{display:grid;gap:0 34px}
+@media(min-width:760px){.two{grid-template-columns:1fr 1fr}}
+
+/* ruled rows */
+.rows{border-top:1px solid var(--line)}
+.row{display:flex;align-items:center;gap:12px;padding:13px 2px;border-bottom:1px solid var(--line)}
+.row.tap{cursor:pointer;transition:background .2s,padding .25s}
+.row.tap:hover{background:linear-gradient(90deg,var(--glow),transparent)}
+.row .grow{flex:1;min-width:0}
+.row .nm{font-weight:600;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row .sub{font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.amt{font:600 17px var(--serif);font-variant-numeric:lining-nums tabular-nums;white-space:nowrap}
+.amt.due{color:var(--due)} .amt.ok{color:var(--ok)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none}
+.dot.ok{background:var(--ok)} .dot.due{background:var(--due)}
+.empty{padding:38px 16px;text-align:center;color:var(--muted)}
+.empty h4{font:600 20px var(--serif);color:var(--text);margin-bottom:6px}
+
+/* buttons */
+.btn{position:relative;overflow:hidden;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 20px;border-radius:999px;border:1px solid var(--line-strong);font-weight:600;font-size:14px;color:var(--text);transition:transform .2s cubic-bezier(.3,1.7,.5,1),background .2s,opacity .2s;white-space:nowrap}
+.btn:active{transform:scale(.95)}
+.btn.sm{min-height:36px;padding:0 14px;font-size:13px}
+.btn.gold{background:linear-gradient(135deg,var(--gold-a),var(--gold-b));color:var(--gold-ink);border-color:transparent}
+.btn.block{display:flex;width:100%}
+.btn.danger{color:var(--due);border-color:color-mix(in srgb,var(--due) 50%,transparent)}
+.btn.ghost{border-color:var(--line)}
+.shine::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 38%,rgba(255,255,255,.6) 50%,transparent 62%);transform:translateX(-130%);animation:shine 3.4s ease-in-out 1s infinite}
+@keyframes shine{0%,55%{transform:translateX(-130%)}100%{transform:translateX(130%)}}
+.fab{position:fixed;right:18px;bottom:calc(86px + env(safe-area-inset-bottom,0px));z-index:25;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:linear-gradient(135deg,var(--gold-a),var(--gold-b));color:var(--gold-ink);box-shadow:0 14px 30px rgba(0,0,0,.4);transition:transform .25s cubic-bezier(.3,1.8,.5,1)}
+.fab:active{transform:scale(.88) rotate(90deg)}
+@media(min-width:900px){.fab{bottom:34px;right:44px}}
+
+/* forms */
+.field{margin-bottom:14px}
+.field label{display:block;font-size:13px;color:var(--muted);margin-bottom:6px}
+.inp{width:100%;min-height:46px;padding:10px 14px;border-radius:12px;border:1px solid var(--line);background:var(--field);transition:border-color .2s,box-shadow .2s}
+.inp:focus{outline:0;border-color:var(--gold);box-shadow:0 0 0 3px color-mix(in srgb,var(--gold) 25%,transparent)}
+textarea.inp{min-height:96px;resize:vertical}
+.err{color:var(--due);font-size:13px;min-height:18px;margin:-4px 0 8px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.seg{display:inline-flex;border:1px solid var(--line-strong);border-radius:999px;padding:3px}
+.seg button{min-height:34px;padding:0 16px;border-radius:999px;font-size:13px;font-weight:600;color:var(--muted);transition:background .25s,color .25s}
+.seg button.on{background:linear-gradient(135deg,var(--gold-a),var(--gold-b));color:var(--gold-ink)}
+.seg.full{display:flex}.seg.full button{flex:1}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chipb{flex:none;min-height:36px;padding:0 15px;border-radius:999px;border:1px solid var(--line);font-size:13px;font-weight:500;color:var(--muted);transition:all .25s}
+.chipb.on{border-color:transparent;background:linear-gradient(135deg,var(--gold-a),var(--gold-b));color:var(--gold-ink);font-weight:600}
+.search{position:relative;margin:4px 0 12px}
+.search .ic{position:absolute;left:14px;top:14px;color:var(--muted)}
+.search .inp{padding-left:42px}
+.meter{height:6px;border-radius:6px;background:var(--track);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,var(--gold-b),var(--gold-a));transition:width 1s cubic-bezier(.2,.8,.2,1)}
+
+/* month bar */
+.mbar{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:4px 0 16px}
+.mbar h3{font:600 22px var(--serif)}
+.mbar .iconbtn{width:38px;height:38px}
+
+/* attendance */
+.datebar{display:flex;align-items:center;gap:8px;margin:2px 0 12px}
+.datebar .inp{min-height:40px;max-width:170px}
+.pa{display:flex;gap:8px}
+.pa button{width:50px;height:44px;border-radius:14px;border:1px solid var(--line);color:var(--muted);font-weight:700;font-size:16px;transition:transform .4s cubic-bezier(.3,2,.5,1),background .2s,color .2s,border-color .2s}
+.pa button.p.on{background:var(--ok);border-color:transparent;color:#05261b;transform:scale(1.07)}
+.pa button.a.on{background:var(--due);border-color:transparent;color:#2c0a07;transform:scale(1.07)}
+.pa button.pop{animation:pop .45s cubic-bezier(.3,1.8,.5,1)}
+@keyframes pop{0%{transform:scale(.78)}60%{transform:scale(1.2)}100%{transform:scale(1.07)}}
+
+/* chart */
+.chart{display:flex;align-items:flex-end;gap:10px;height:190px;padding-top:26px}
+.bar{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;height:100%}
+.bar b{display:block;width:100%;max-width:44px;height:0;border-radius:10px 10px 4px 4px;background:linear-gradient(var(--gold-a),var(--gold-b));opacity:.45;transition:height 1s cubic-bezier(.2,.9,.2,1)}
+.bar.now b{opacity:1}
+.bar span{font-size:12px;color:var(--muted)}
+.bar em{font:600 12px var(--serif);font-style:normal;color:var(--gold-text);font-variant-numeric:lining-nums}
+
+/* pro + referral */
+.plans{display:grid;gap:12px;margin:14px 0}
+@media(min-width:700px){.plans{grid-template-columns:1fr 1fr}}
+.plan{position:relative;text-align:left;padding:20px;border-radius:20px;border:1px solid var(--line);background:var(--card);transition:transform .3s cubic-bezier(.3,1.6,.5,1),border-color .25s}
+.plan.on{border-color:var(--gold);transform:translateY(-2px);box-shadow:0 0 0 1px var(--gold) inset}
+.plan .pr{font:600 34px var(--serif);color:var(--gold-text);font-variant-numeric:lining-nums}
+.badge{position:absolute;top:-11px;right:16px;padding:3px 12px;border-radius:999px;background:linear-gradient(135deg,var(--gold-a),var(--gold-b));color:var(--gold-ink);font-size:12px;font-weight:700}
+.steps{display:grid;gap:18px;margin-top:8px}
+.step{display:grid;grid-template-columns:34px 1fr;gap:14px}
+.step .n{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;font:600 15px var(--serif);border:1px solid var(--line-strong);color:var(--gold-text)}
+.step h4{font-weight:600;margin-bottom:6px}
+.qr{display:inline-block;padding:10px;border-radius:14px;background:#F4EFE6;margin-top:12px}
+.qr img,.qr canvas{display:block}
+.codebox{font:600 28px/1.2 var(--serif);letter-spacing:2px;color:var(--gold-text);text-align:center;padding:18px 10px;word-break:break-all}
+.list{display:grid;gap:10px}
+.kv{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:14px}
+.kv:last-child{border:0}
+.kv b{font-weight:600}
+
+/* sheet */
+.scrim{position:fixed;inset:0;z-index:60;display:flex;align-items:flex-end;justify-content:center;background:rgba(3,8,18,0);transition:background .28s}
+.scrim.open{background:rgba(3,8,18,.64)}
+.sheet{width:100%;max-width:560px;max-height:92vh;overflow:auto;padding:24px 20px calc(24px + env(safe-area-inset-bottom,0px));background:var(--card);border:1px solid var(--line-strong);border-bottom:0;border-radius:28px 28px 0 0;transform:translateY(60px) scale(.98);opacity:0;transition:transform .48s cubic-bezier(.2,1.15,.3,1),opacity .25s}
+.scrim.open .sheet{transform:none;opacity:1}
+@media(min-width:700px){.scrim{align-items:center}.sheet{border-radius:28px;border-bottom:1px solid var(--line-strong)}}
+.sheet h3{font:600 24px/1.2 var(--serif);margin-bottom:16px}
+.sheet .acts{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.sheet .acts .btn{flex:1 1 140px}
+.receipt{padding:26px 22px;text-align:center}
+.receipt .rt{font:600 22px var(--serif);margin-bottom:2px}
+.receipt .ra{font:600 46px/1.1 var(--serif);color:var(--gold-text);margin:14px 0;font-variant-numeric:lining-nums}
+.receipt .kv{text-align:left}
+.stamp{display:inline-flex;align-items:center;gap:8px;color:var(--ok);font-weight:600;border:1.5px solid var(--ok);border-radius:10px;padding:4px 12px;transform:rotate(-4deg);animation:stamp .6s cubic-bezier(.3,1.9,.5,1) .25s both}
+@keyframes stamp{0%{transform:rotate(-14deg) scale(2.2);opacity:0}100%{transform:rotate(-4deg) scale(1);opacity:1}}
+.toast{position:fixed;left:50%;bottom:calc(96px + env(safe-area-inset-bottom,0px));z-index:80;transform:translate(-50%,20px);opacity:0;padding:11px 20px;border-radius:999px;background:linear-gradient(135deg,var(--gold-a),var(--gold-b));color:var(--gold-ink);font-weight:600;font-size:14px;box-shadow:0 12px 28px rgba(0,0,0,.4);transition:all .35s cubic-bezier(.3,1.6,.5,1);max-width:90vw;text-align:center}
+.toast.in{transform:translate(-50%,0);opacity:1}
+.spark{position:fixed;width:7px;height:7px;border-radius:50%;background:var(--gold-hi);z-index:90;pointer-events:none}
+
+/* stagger on navigation */
+.stag>*{animation:rise .55s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*55ms)}
+@keyframes rise{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* auth */
+.auth{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 22px;text-align:center}
+.auth-lang{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:16px}
+.seal{width:132px;height:132px;margin-bottom:18px}
+.seal .d{fill:none;stroke:var(--gold);stroke-linecap:round;stroke-dasharray:var(--c);stroke-dashoffset:var(--c);animation:draw 1.6s cubic-bezier(.4,0,.2,1) forwards}
+.seal .d2{animation-delay:.35s}
+.seal .tick{fill:none;stroke:var(--gold);stroke-width:1.4;stroke-dasharray:1.5 7;transform-origin:66px 66px;animation:spin 60s linear infinite;opacity:0;animation:fadein 1s 1.2s forwards,spin 90s linear infinite}
+.seal text{fill:var(--gold-text);font:600 40px var(--serif);opacity:0;animation:fadein .9s 1.05s forwards}
+@keyframes draw{to{stroke-dashoffset:0}}
+@keyframes fadein{to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+.auth h1{font:600 clamp(36px,9vw,52px)/1.1 var(--serif);letter-spacing:.5px;animation:rise .9s cubic-bezier(.2,.8,.2,1) 1.2s both}
+.auth .tag{max-width:340px;color:var(--muted);margin:10px 0 28px;animation:rise .9s cubic-bezier(.2,.8,.2,1) 1.4s both}
+.auth-card{width:100%;max-width:380px;text-align:left;animation:rise .9s cubic-bezier(.2,.8,.2,1) 1.6s both}
+.auth-card .btn{margin-bottom:12px}
+.fine{max-width:340px;margin-top:18px;font-size:12px;color:var(--muted);animation:rise .9s cubic-bezier(.2,.8,.2,1) 1.8s both}
+.gmark{font:700 16px var(--sans);width:22px;height:22px;border-radius:50%;background:#fff;color:#4285F4;display:grid;place-items:center}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.001ms!important;animation-delay:0s!important;animation-iteration-count:1!important;transition-duration:.001ms!important;transition-delay:0s!important}
+  .seal .d{stroke-dashoffset:0}.seal text,.seal .tick{opacity:1}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E8CF8F"/><stop offset="1" stop-color="#B8902F"/></linearGradient>
+</defs></svg>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(function(){
+'use strict';
+
+/* ============================================================
+   SETTINGS BLOCK: edit these values, then publish again.
+   The secret MUST be the same in the Owner Panel file.
+   ============================================================ */
+const CONFIG = {
+  appName: 'Tuition Wala',
+  ownerUpi: 'yourname@upi',            // your UPI ID: Pro payments come here
+  ownerWhatsApp: '910000000000',       // your WhatsApp number with country code
+  monthlyPrice: 100,
+  yearlyPrice: 1000,
+  freeLimit: 20,                       // free students per tutor
+  trialDays: 7,                        // Pro days a friend gets when using a referral code
+  rewardDays: 30,                      // Pro days the referrer gets after the friend buys Pro
+  days: { M: 30, Y: 365, R: 30 },      // M = monthly code, Y = yearly code, R = referral reward code
+  secret: 'CHANGE-THIS-SECRET-2026'    // used to sign Pro codes. Keep it private.
+};
+
+/* ---------- i18n ---------- */
+const T = { en: {}, bn: {} };
+function K(k, en, bn){ T.en[k] = en; T.bn[k] = bn; }
+K('tagline','Fees, attendance and reports in one tidy ledger.','ফি, হাজিরা আর রিপোর্ট, সব এক গোছানো খাতায়।');
+K('google','Continue with Google','Google দিয়ে চালিয়ে যান');
+K('phoneBtn','Continue with phone number','ফোন নম্বর দিয়ে চালিয়ে যান');
+K('demoNote','Demo build: no real account is created. Your data stays on this device.','ডেমো সংস্করণ: আসল অ্যাকাউন্ট তৈরি হয় না। আপনার ডেটা এই ডিভাইসেই থাকে।');
+K('yourName','Your name','আপনার নাম');
+K('mobile','Mobile number','মোবাইল নম্বর');
+K('sendOtp','Send OTP','OTP পাঠান');
+K('otpLabel','6-digit OTP','৬ অঙ্কের OTP');
+K('otpHint','Demo OTP is 123456','ডেমো OTP: 123456');
+K('otpBad','That OTP is not correct.','OTP ঠিক নয়।');
+K('verify','Verify and continue','যাচাই করে এগিয়ে যান');
+K('cont','Continue','এগিয়ে যান');
+K('refOpt',"Friend's referral code (optional)",'বন্ধুর রেফারাল কোড (ঐচ্ছিক)');
+K('needName','Enter your name.','নাম লিখুন।');
+K('needPhone','Enter a valid 10-digit mobile number.','১০ অঙ্কের সঠিক মোবাইল নম্বর দিন।');
+K('startTitle','How would you like to begin?','কীভাবে শুরু করবেন?');
+K('startEmpty','Start with an empty ledger','ফাঁকা খাতা দিয়ে শুরু করুন');
+K('trySample','Explore with sample data','নমুনা ডেটা দিয়ে ঘুরে দেখুন');
+K('welcome','Welcome, {name}','স্বাগতম, {name}');
+K('back','Back','পিছনে');
+K('nav_home','Home','হোম'); K('nav_students','Students','ছাত্রছাত্রী'); K('nav_att','Attendance','হাজিরা'); K('nav_fees','Fees','ফি'); K('nav_rep','Reports','রিপোর্ট');
+K('t_pro','Pro plan','প্রো প্ল্যান'); K('t_ref','Invite a friend','বন্ধুকে ডাকুন'); K('t_set','Settings','সেটিংস');
+K('goodMorning','Good morning','শুভ সকাল'); K('goodAfternoon','Good afternoon','শুভ অপরাহ্ন'); K('goodEvening','Good evening','শুভ সন্ধ্যা');
+K('collectedOf','collected of {x} expected','{x} প্রত্যাশিতের মধ্যে আদায়');
+K('pending','{n} families pending','{n}টি পরিবারের ফি বাকি');
+K('allClear','Every fee is collected','সব ফি আদায় হয়েছে');
+K('feesToCollect','Fees to collect','যে ফি আদায় বাকি'); K('openFees','Open fees','ফি দেখুন');
+K('takeAtt',"Today's attendance",'আজকের হাজিরা'); K('marked','Marked','নেওয়া হয়েছে'); K('markNow','Mark now','এখন নিন');
+K('nStudents','{n} students','{n} জন');
+K('last6','Last six months','গত ছয় মাস');
+K('emptyTitle','Your ledger is empty','আপনার খাতা এখনও ফাঁকা');
+K('emptyBody','Add your first student to start tracking fees and attendance.','ফি আর হাজিরা লিখতে প্রথম ছাত্রছাত্রী যোগ করুন।');
+K('addFirst','Add a student','ছাত্রছাত্রী যোগ করুন');
+K('freeUsed','{n} of {max} free students used','{max} জনের মধ্যে {n} জন ফ্রি স্লট ব্যবহৃত');
+K('proUntil','Pro is active until {d}','প্রো চালু আছে {d} পর্যন্ত');
+K('goPro','Go Pro','প্রো নিন'); K('proLeft','Pro, {d} days left','প্রো, আরও {d} দিন');
+K('inviteTitle','Invite a tutor friend','টিউটর বন্ধুকে ডাকুন');
+K('inviteBody','You both get free Pro days when they join.','তিনি যোগ দিলে দু’জনেই বিনামূল্যে প্রো দিন পাবেন।');
+K('invite','See my code','আমার কোড দেখুন');
+K('searchPh','Search students','নাম দিয়ে খুঁজুন'); K('allBatches','All batches','সব ব্যাচ'); K('noMatch','No students match.','কোনো ছাত্রছাত্রী মেলেনি।');
+K('addStudent','Add student','ছাত্রছাত্রী যোগ'); K('editStudent','Edit student','তথ্য বদলান');
+K('fName',"Student's name",'ছাত্রছাত্রীর নাম'); K('fClass','Class','ক্লাস'); K('fBatch','Batch or subject','ব্যাচ বা বিষয়');
+K('fGuardian',"Guardian's name",'অভিভাবকের নাম'); K('fPhone',"Guardian's WhatsApp (10 digits)",'অভিভাবকের WhatsApp (১০ অঙ্ক)');
+K('fFee','Monthly fee (₹)','মাসিক ফি (₹)'); K('fSince','Joined in','কোন মাস থেকে');
+K('save','Save','সংরক্ষণ'); K('cancel','Cancel','বাতিল'); K('needFee','Enter a monthly fee.','মাসিক ফি লিখুন।');
+K('limitTitle','Free plan is full','ফ্রি প্ল্যান ভরে গেছে');
+K('limitBody','The free plan holds {max} students. Go Pro for unlimited students.','ফ্রি প্ল্যানে {max} জন পর্যন্ত রাখা যায়। সীমাহীন ছাত্রছাত্রীর জন্য প্রো নিন।');
+K('attThisMonth','Attendance this month','এই মাসের হাজিরা'); K('noClasses','No classes yet','এখনও ক্লাস নেই');
+K('feeHistory','Fees, last 12 months','ফি, গত ১২ মাস');
+K('collectFee','Collect fee','ফি নিন'); K('msgGuardian','Message guardian','অভিভাবককে মেসেজ');
+K('markLeft','Mark as left','ছেড়ে দিয়েছে'); K('deleteStudent','Delete student','মুছে ফেলুন');
+K('confirmDelete','Delete {n}? Their attendance and fee records will be removed.','{n}-কে মুছবেন? তার হাজিরা ও ফি-র হিসাবও মুছে যাবে।');
+K('delete','Delete','মুছুন'); K('left','Left','ছেড়ে গেছে');
+K('present','Present','উপস্থিত'); K('absent','Absent','অনুপস্থিত'); K('unmarked','Unmarked','বাকি');
+K('markAll','Mark all present','সবাইকে উপস্থিত করুন'); K('clearAll','Clear','মুছুন'); K('today','Today','আজ');
+K('noBatch','Add students first to take attendance.','হাজিরা নিতে আগে ছাত্রছাত্রী যোগ করুন।');
+K('dueTab','Due','বাকি'); K('paidTab','Paid','আদায়'); K('allTab','All','সব');
+K('collected','Collected','আদায়'); K('expected','Expected','প্রত্যাশিত'); K('stillDue','Still due','বাকি আছে');
+K('collect','Collect','নিন'); K('remind','Remind','মনে করান'); K('receipt','Receipt','রসিদ');
+K('partial','{p} paid, {d} due','{p} পেয়েছেন, {d} বাকি');
+K('sendReminders','Send reminders','রিমাইন্ডার পাঠান');
+K('noDue','Nothing is due this month.','এ মাসে কিছু বাকি নেই।'); K('noneHere','Nothing here yet.','এখানে এখনও কিছু নেই।');
+K('amount','Amount (₹)','পরিমাণ (₹)'); K('mode','Payment mode','পেমেন্টের ধরন'); K('cash','Cash','নগদ'); K('upi','UPI','UPI'); K('date','Date','তারিখ');
+K('recordPay','Record payment','পেমেন্ট লিখুন'); K('recorded','Payment recorded','পেমেন্ট লেখা হয়েছে');
+K('sent','Sent','পাঠানো'); K('send','Send','পাঠান'); K('reminderFor','Reminders for {m}','{m}-এর রিমাইন্ডার'); K('needAmt','Enter an amount.','পরিমাণ লিখুন।');
+K('rcTitle','Fees receipt','ফি-র রসিদ'); K('rcNo','Receipt no.','রসিদ নং'); K('rcFor','Received from','যার কাছ থেকে'); K('rcMonth','For','মাস'); K('rcMode','Paid by','মাধ্যম');
+K('rcSend','Send on WhatsApp','WhatsApp-এ পাঠান'); K('rcCopy','Copy text','লেখা কপি'); K('rcSave','Save receipt','রসিদ সংরক্ষণ');
+K('done','Done','হয়েছে'); K('copied','Copied','কপি হয়েছে'); K('saved','Saved','সংরক্ষিত'); K('paid','Paid','আদায়');
+K('repDraft','Add marks','নম্বর যোগ করুন'); K('repReady','Ready','তৈরি');
+K('attended','{p} of {n} classes','{n}টির মধ্যে {p}টি ক্লাস');
+K('testName','Test name','পরীক্ষার নাম'); K('got','Marks got','প্রাপ্ত নম্বর'); K('full','Full marks','পূর্ণমান');
+K('remark','Remark (optional)','মন্তব্য (ঐচ্ছিক)'); K('preview','Message preview','মেসেজের নমুনা'); K('reportSaved','Report saved','রিপোর্ট সংরক্ষিত');
+K('proTitle','Unlimited students','সীমাহীন ছাত্রছাত্রী');
+K('proSub','Free covers {max} students. Pro removes the limit. Everything else stays the same.','ফ্রি-তে {max} জন পর্যন্ত। প্রো-তে কোনো সীমা নেই। বাকি সবকিছু একই থাকে।');
+K('monthly','Monthly','মাসিক'); K('yearly','Yearly','বার্ষিক');
+K('perMonth','per month','প্রতি মাসে'); K('perYear','per year','প্রতি বছরে');
+K('bestValue','Best value','সেরা দাম'); K('save2','2 months free','২ মাস ফ্রি');
+K('step1','Pay by UPI','UPI-তে পেমেন্ট করুন'); K('payBtn','Pay {p} in your UPI app','আপনার UPI অ্যাপে {p} দিন');
+K('scanNote','Or scan this code from another phone.','অথবা অন্য ফোন থেকে এই কোড স্ক্যান করুন।');
+K('step2','Send proof on WhatsApp','WhatsApp-এ প্রমাণ পাঠান'); K('proofBtn','Send payment proof','পেমেন্টের প্রমাণ পাঠান');
+K('proofHelp','We check the payment and reply with your Pro code.','আমরা পেমেন্ট দেখে আপনাকে প্রো কোড পাঠাব।');
+K('step3','Enter your Pro code','প্রো কোড লিখুন'); K('redeem','Activate','চালু করুন');
+K('codeBad','This code is not valid.','এই কোডটি সঠিক নয়।'); K('codeUsed','This code was already used on this device.','এই কোড এই ডিভাইসে আগেই ব্যবহার হয়েছে।');
+K('activated','Pro activated for {d} days','{d} দিনের জন্য প্রো চালু হল');
+K('proMsg','Hello, I have paid {p} for the Tuition Wala Pro {plan} plan.\nName: {n}\nPhone: {ph}\nUPI reference number: \n{ref}','নমস্কার, আমি Tuition Wala প্রো {plan} প্ল্যানের জন্য {p} পেমেন্ট করেছি।\nনাম: {n}\nফোন: {ph}\nUPI রেফারেন্স নম্বর: \n{ref}');
+K('refLine','Referral code: {c}','রেফারাল কোড: {c}');
+K('refHow','How it works','কীভাবে কাজ করে');
+K('ref1','Share your code with a tutor you know.','পরিচিত টিউটরকে আপনার কোড পাঠান।');
+K('ref2','They enter it at sign up and get {d} days of Pro free.','তিনি সাইন আপের সময় কোডটি দিলে {d} দিন প্রো ফ্রি পাবেন।');
+K('ref3','When they buy Pro, you get {d} more days of Pro.','তিনি প্রো কিনলে আপনি আরও {d} দিন প্রো পাবেন।');
+K('yourCode','Your referral code','আপনার রেফারাল কোড'); K('shareWa','Share on WhatsApp','WhatsApp-এ শেয়ার'); K('copyCode','Copy code','কোড কপি');
+K('rewards','Rewards earned','পাওয়া পুরস্কার'); K('rewardDays','{d} days from {n} referrals','{n}টি রেফারাল থেকে {d} দিন');
+K('noRewards','No rewards yet. After your friend pays, we send you a reward code. Enter it on the Pro page.','এখনও কোনো পুরস্কার নেই। বন্ধু পেমেন্ট করলে আমরা আপনাকে পুরস্কারের কোড পাঠাব। সেটি প্রো পেজে লিখবেন।');
+K('haveCode',"Got a friend's code?",'বন্ধুর কোড আছে?'); K('applyRef','Apply','প্রয়োগ');
+K('refApplied','Referral applied. {d} days of Pro added.','রেফারাল প্রয়োগ হল। {d} দিন প্রো যোগ হয়েছে।');
+K('refBad','This referral code is not valid.','এই রেফারাল কোডটি সঠিক নয়।'); K('refOwn','You cannot use your own code.','নিজের কোড ব্যবহার করা যায় না।');
+K('refDone','A referral code is already applied.','একটি রেফারাল কোড আগেই প্রয়োগ হয়েছে।');
+K('refShare',"I use Tuition Wala for fees, attendance and reports. Use my code {c} when you sign up and get {d} days of Pro free. {u}",'আমি ফি, হাজিরা আর রিপোর্টের জন্য Tuition Wala ব্যবহার করি। সাইন আপের সময় আমার কোড {c} দিলে {d} দিন প্রো ফ্রি পাবেন। {u}');
+K('openPro','Open Pro page','প্রো পেজ খুলুন');
+K('setProfile','Profile','প্রোফাইল'); K('yourUpi','Your UPI ID (shown in reminders)','আপনার UPI ID (রিমাইন্ডারে দেখা যাবে)');
+K('tplLabel','Fee reminder message','ফি রিমাইন্ডারের মেসেজ');
+K('tplHelp','Keep these words as they are: {guardian} {student} {amount} {month} {upi} {tutor}','এই শব্দগুলো যেমন আছে রাখুন: {guardian} {student} {amount} {month} {upi} {tutor}');
+K('tplDefault',"Hello {guardian}, a gentle reminder that {student}'s tuition fee of {amount} for {month} is pending. {upi}Thank you. {tutor}",'নমস্কার {guardian}, {student}-এর {month} মাসের টিউশন ফি {amount} বাকি আছে। {upi}ধন্যবাদ। {tutor}');
+K('resetTpl','Reset message','আগের মতো করুন');
+K('language','Language','ভাষা'); K('theme','Theme','থিম'); K('dark','Dark','ডার্ক'); K('light','Light','লাইট');
+K('backup','Backup','ব্যাকআপ'); K('exportStudents','Export students (CSV)','ছাত্রছাত্রীর তালিকা (CSV)'); K('exportPay','Export payments (CSV)','পেমেন্টের তালিকা (CSV)');
+K('dataSec','Data','ডেটা'); K('clearData','Clear all data','সব ডেটা মুছুন');
+K('clearConfirm','This removes every student, attendance mark and payment on this device.','এই ডিভাইস থেকে সব ছাত্রছাত্রী, হাজিরা আর পেমেন্টের হিসাব মুছে যাবে।');
+K('signOut','Sign out','সাইন আউট');
+K('copyTitle','Copy this text','এই লেখাটি কপি করুন');
+K('copyBody','Saving files is not available here. Copy the text and paste it into a file.','এখানে ফাইল সেভ করা যাচ্ছে না। লেখাটি কপি করে কোনো ফাইলে পেস্ট করুন।');
+K('moreMenu','Menu','মেনু');
+
+const t = (k, v) => {
+  let s = (T[S.lang] && T[S.lang][k]) || T.en[k] || k;
+  if (v) for (const x in v) s = s.split('{' + x + '}').join(v[x]);
+  return s;
+};
+
+/* ---------- helpers ---------- */
+const $ = (s, r) => (r || document).querySelector(s);
+const $$ = (s, r) => Array.from((r || document).querySelectorAll(s));
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = n => String(n).padStart(2, '0');
+const iso = d => d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+const mk = d => iso(d).slice(0, 7);
+const DAY = 864e5;
+const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const inr = n => '₹' + Math.round(n).toLocaleString('en-IN');
+const uid = () => Math.random().toString(36).slice(2, 9);
+const loc = () => S.lang === 'bn' ? 'bn-IN' : 'en-IN';
+function addMonths(m, n){ const [y, mo] = m.split('-').map(Number); const d = new Date(y, mo - 1 + n, 1); return mk(d); }
+function monthLabel(m){ const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString(loc(), { month: 'long', year: 'numeric' }); }
+function monthName(m){ const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString(loc(), { month: 'long' }); }
+function shortMonth(m){ const [y, mo] = m.split('-').map(Number); return new Date(y, mo - 1, 1).toLocaleDateString(loc(), { month: 'short' }); }
+function dateLabel(s){ const [y, m, d] = s.split('-').map(Number); return new Date(y, m - 1, d).toLocaleDateString(loc(), { weekday: 'short', day: 'numeric', month: 'short' }); }
+function initials(n){ const p = String(n).trim().split(/\s+/); return ((p[0] || '')[0] || '?').toUpperCase() + ((p[1] || '')[0] || '').toUpperCase(); }
+function mulberry(a){ return function(){ a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+const ICONS = {
+  home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M10 21v-6h4v6"/>',
+  users:'<circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.6-3.6 3.2-5.5 6.5-5.5s5.9 1.9 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17.5 14c2.4 0 4 1.4 4.500 4"/>',
+  cal:'<rect x="3.500" y="5" width="17" height="15.500" rx="2.500"/><path d="M3.500 10h17M8 3v4M16 3v4"/><path d="m9 15 2.200 2.200L15.500 13"/>',
+  rupee:'<path d="M6.500 4.500h11M6.500 9.500h11"/><path d="M9 4.500c4.500 0 6.500 1.700 6.500 5s-2.500 5-6.500 5H8l7.500 6"/>',
+  file:'<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h6"/>',
+  crown:'<path d="m3 8 4.500 4L12 5l4.500 7L21 8l-2 11H5z"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>', search:'<circle cx="11" cy="11" r="6.500"/><path d="m20 20-4.200-4.200"/>',
+  chl:'<path d="m15 5-7 7 7 7"/>', chr:'<path d="m9 5 7 7-7 7"/>', x:'<path d="M6 6l12 12M18 6 6 18"/>',
+  copy:'<rect x="8" y="8" width="12" height="12" rx="2.500"/><path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h2"/>',
+  gift:'<rect x="3.500" y="8.500" width="17" height="4" rx="1"/><path d="M5 12.500V20h14v-7.500M12 8.500V20"/><path d="M12 8.500C10 8.500 7.500 8 7.500 6a2 2 0 0 1 3.500-1.300L12 6l1-1.300A2 2 0 0 1 16.500 6c0 2-2.500 2.500-4.500 2.500z"/>',
+  send:'<path d="M21 3 10 14"/><path d="m21 3-7 18-4-7-7-4z"/>',
+  sliders:'<path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/>',
+  out:'<path d="M9 4H5a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h4"/><path d="m16 8 4 4-4 4M20 12H9"/>',
+  check:'<path d="m5 12.500 4.500 4.500L19 7"/>', phone:'<rect x="7" y="3" width="10" height="18" rx="2.500"/><path d="M11 18h2"/>',
+  menu:'<path d="M4 7h16M4 12h16M4 17h16"/>', save:'<path d="M12 4v11M7 11l5 5 5-5M5 20h14"/>'
+};
+const ic = (n, s) => `<svg class="ic" width="${s || 20}" height="${s || 20}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[n]}</svg>`;
+const wa = (phone, text) => { const p = String(phone || '').replace(/\D/g, ''); const n = p.length === 10 ? '91' + p : p; return 'https://wa.me/' + n + '?text=' + encodeURIComponent(text); };
+
+/* ---------- codes (demo signing; a real version verifies on a server) ---------- */
+function h53(str, seed){ seed = seed || 0; let h1 = 0xdeadbeef ^ seed, h2 = 0x41c6ce57 ^ seed; for (let i = 0, ch; i < str.length; i++){ ch = str.charCodeAt(i); h1 = Math.imul(h1 ^ ch, 2654435761); h2 = Math.imul(h2 ^ ch, 1597334677); } h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507); h1 ^= Math.imul(h2 ^ (h2 >>> 13), 3266489909); h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507); h2 ^= Math.imul(h1 ^ (h1 >>> 13), 3266489909); return 4294967296 * (2097151 & h2) + (h1 >>> 0); }
+const ALPHA = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+const rnd = n => Array.from({ length: n }, () => ALPHA[Math.floor(Math.random() * ALPHA.length)]).join('');
+const chk = body => h53(body + CONFIG.secret).toString(36).slice(-2).toUpperCase().padStart(2, '0');
+const makeCode = type => { const r = rnd(6); return 'TW' + type + '-' + r + '-' + chk(type + r); };
+function parseCode(c){ const m = /^TW([MYRF])-([A-Z2-9]{6})-([A-Z0-9]{2})$/.exec(String(c || '').trim().toUpperCase().replace(/\s+/g, '')); if (!m || chk(m[1] + m[2]) !== m[3]) return null; return { type: m[1], body: m[2] }; }
+const normCode = c => String(c || '').trim().toUpperCase().replace(/\s+/g, '');
+
+/* ---------- state ---------- */
+const KEY = 'tuition_wala_v1';
+function fresh(){ return { v: 1, user: null, lang: 'bn', theme: 'dark', tutor: { name: '', phone: '', upi: '', refCode: '' }, planExpiry: 0, students: [], attendance: {}, payments: [], marks: {}, used: [], refFrom: null, tpl: { en: '', bn: '' }, receiptNo: 0, reminded: {} }; }
+function load(){ try { const r = localStorage.getItem(KEY); if (r) return Object.assign(fresh(), JSON.parse(r)); } catch (e) {} return null; }
+let S = load() || fresh();
+function save(){ try { localStorage.setItem(KEY, JSON.stringify(S)); } catch (e) {} }
+const U = { tab: 'home', month: mk(new Date()), date: iso(new Date()), batch: null, q: '', bf: 'all', ftab: 'due', plan: 'yearly', auth: { step: 'choose', method: '', name: '', phone: '', ref: '', err: '' } };
+
+/* ---------- domain ---------- */
+const isPro = () => (S.planExpiry || 0) > Date.now();
+const proDays = () => Math.max(0, Math.ceil((S.planExpiry - Date.now()) / DAY));
+const active = () => S.students.filter(s => !s.end);
+const inMonth = (s, m) => m >= s.since && (!s.end || m <= s.end);
+const byId = id => S.students.find(s => s.id === id);
+function feeInfo(s, m){ const paid = S.payments.filter(p => p.sid === s.id && p.m === m).reduce((a, p) => a + p.amt, 0); return { fee: s.fee, paid, due: Math.max(0, s.fee - paid) }; }
+function monthStats(m){
+  let expected = 0, collected = 0, due = 0; const dueList = [], paidList = [], all = [];
+  S.students.forEach(s => { if (!inMonth(s, m)) return; const i = feeInfo(s, m); expected += s.fee; collected += i.paid; due += i.due; const r = { s, i }; all.push(r); (i.due > 0 ? dueList : paidList).push(r); });
+  dueList.sort((a, b) => b.i.due - a.i.due); all.sort((a, b) => a.s.name.localeCompare(b.s.name));
+  return { expected, collected, due, dueList, paidList, all };
+}
+function attStats(sid, m){ let p = 0, n = 0; for (const d in S.attendance){ if (d.indexOf(m) === 0){ const v = S.attendance[d][sid]; if (v === 'P'){ p++; n++; } else if (v === 'A') n++; } } return { p, n, pct: n ? Math.round(p / n * 100) : null }; }
+const batches = () => Array.from(new Set(active().map(s => s.batch).filter(Boolean))).sort();
+function grant(days){ S.planExpiry = Math.max(Date.now(), S.planExpiry || 0) + days * DAY; }
+function redeem(raw){
+  const p = parseCode(raw); if (!p || p.type === 'F') return { err: 'codeBad' };
+  const code = normCode(raw); if (S.used.some(u => u.code === code)) return { err: 'codeUsed' };
+  const days = CONFIG.days[p.type]; grant(days); S.used.push({ code, type: p.type, days, at: Date.now() }); save(); return { days };
+}
+function applyRef(raw){
+  const p = parseCode(raw); if (!p || p.type !== 'F') return 'refBad';
+  if (normCode(raw) === S.tutor.refCode) return 'refOwn';
+  if (S.refFrom) return 'refDone';
+  S.refFrom = normCode(raw); grant(CONFIG.trialDays); save(); return null;
+}
+function tplText(){ return (S.tpl[S.lang] || '').trim() || t('tplDefault'); }
+function reminderText(s, m){
+  const i = feeInfo(s, m); const upi = S.tutor.upi ? (S.lang === 'bn' ? 'UPI: ' : 'Pay via UPI: ') + S.tutor.upi + '. ' : '';
+  return tplText().split('{guardian}').join(s.guardian || '').split('{student}').join(s.name).split('{amount}').join(inr(i.due)).split('{month}').join(monthName(m)).split('{upi}').join(upi).split('{tutor}').join('- ' + (S.tutor.name || CONFIG.appName));
+}
+function reportText(s, m){
+  const a = attStats(s.id, m); const mk_ = (S.marks[m] || {})[s.id] || {}; const bn = S.lang === 'bn'; const parts = [];
+  parts.push(bn ? `নমস্কার ${s.guardian || ''}, ${monthName(m)} মাসে ${s.name}-এর রিপোর্ট:` : `Hello ${s.guardian || ''}, ${s.name}'s report for ${monthName(m)}:`);
+  if (a.n) parts.push(bn ? `${a.n}টি ক্লাসের মধ্যে ${a.p}টিতে উপস্থিত (${a.pct}%)।` : `attended ${a.p} of ${a.n} classes (${a.pct}%).`);
+  if (mk_.got !== undefined && mk_.got !== '' && mk_.full) parts.push(`${mk_.test || (bn ? 'পরীক্ষা' : 'Test')}: ${mk_.got}/${mk_.full}.`);
+  if (mk_.note) parts.push(mk_.note);
+  parts.push('- ' + (S.tutor.name || CONFIG.appName));
+  return parts.join(' ');
+}
+function receiptText(p){
+  const s = byId(p.sid) || { name: '' }; const bn = S.lang === 'bn';
+  return (bn ? `রসিদ ${p.no}: ${s.name}-এর কাছ থেকে ${monthName(p.m)} মাসের ফি বাবদ ${inr(p.amt)} পেয়েছি (${p.mode === 'upi' ? 'UPI' : 'নগদ'})। ধন্যবাদ। ` : `Receipt ${p.no}: ${inr(p.amt)} received from ${s.name} for ${monthName(p.m)} (${p.mode === 'upi' ? 'UPI' : 'cash'}). Thank you. `) + '- ' + (S.tutor.name || CONFIG.appName);
+}
+
+/* ---------- sample data ---------- */
+function seedSample(){
+  const r = mulberry(7), now = new Date(), cur = mk(now);
+  const B = ['Class 10 Math', 'Class 8 Science', 'Class 12 Physics'];
+  const people = [['Rohan Das','Sumita Das',0,600],['Ananya Sen','Partha Sen',0,600],['Arjun Mondal','Rina Mondal',0,600],['Ishita Ghosh','Tapan Ghosh',0,600],['Soham Banerjee','Mitu Banerjee',0,600],['Tiyasha Roy','Sanjay Roy',0,600],
+    ['Debarghya Pal','Kakoli Pal',1,450],['Riya Saha','Dipak Saha',1,450],['Sayan Dutta','Nandita Dutta',1,450],['Mitali Bose','Arun Bose',1,450],['Aritra Chakraborty','Shampa Chakraborty',1,450],
+    ['Swastika Nandi','Bijoy Nandi',2,800],['Rajdeep Paul','Sreela Paul',2,800],['Puja Biswas','Gopal Biswas',2,800],['Abhishek Laha','Mala Laha',2,800],['Srijita Mukherjee','Amit Mukherjee',2,800]];
+  S.students = people.map((p, i) => ({ id: uid(), name: p[0], cls: String([10, 8, 12][p[2]]), batch: B[p[2]], guardian: p[1], phone: '98' + String(30000000 + i * 137921).slice(0, 8), fee: p[3], since: addMonths(cur, -(2 + Math.floor(r() * 5))), end: null }));
+  S.attendance = {}; S.payments = []; S.marks = {}; S.receiptNo = 0;
+  const dows = [[1,2,3,4],[1,3,5],[2,4,6]];
+  for (let k = 0; k < 28; k++){
+    const d = new Date(now.getTime() - k * DAY); const ds = iso(d); const dow = d.getDay();
+    B.forEach((b, bi) => { if (dows[bi].indexOf(dow) < 0) return; if (k === 0) return; S.students.filter(s => s.batch === b).forEach(s => { if (ds.slice(0, 7) < s.since) return; (S.attendance[ds] = S.attendance[ds] || {})[s.id] = r() < 0.88 ? 'P' : 'A'; }); });
+  }
+  S.students.forEach(s => {
+    let m = s.since; while (m <= cur){
+      const isCur = m === cur; const pays = isCur ? r() < 0.55 : r() < 0.93;
+      if (pays){ S.receiptNo++; const day = 1 + Math.floor(r() * 9); const [yy, mm] = m.split('-'); S.payments.push({ id: uid(), sid: s.id, m, amt: s.fee, mode: r() < 0.5 ? 'cash' : 'upi', date: `${yy}-${mm}-${pad(day)}`, no: 'TW-' + yy.slice(2) + mm + '-' + String(S.receiptNo).padStart(4, '0') }); }
+      m = addMonths(m, 1);
+    }
+  });
+  const pm = addMonths(cur, -1); S.marks[pm] = {};
+  S.students.slice(0, 11).forEach(s => { S.marks[pm][s.id] = { test: 'Unit Test', got: 28 + Math.floor(r() * 20), full: 50, note: '' }; });
+}
+
+/* ---------- ui primitives ---------- */
+const root = $('#root');
+function toast(msg){ const el = document.createElement('div'); el.className = 'toast'; el.textContent = msg; document.body.appendChild(el); requestAnimationFrame(() => el.classList.add('in')); setTimeout(() => { el.classList.remove('in'); setTimeout(() => el.remove(), 350); }, 2300); }
+function burst(x, y){ if (REDUCED) return; for (let i = 0; i < 28; i++){ const s = document.createElement('i'); s.className = 'spark'; s.style.left = x + 'px'; s.style.top = y + 'px'; document.body.appendChild(s); const a = Math.random() * Math.PI * 2, d = 60 + Math.random() * 130; s.animate([{ transform: 'translate(-50%,-50%) scale(1)', opacity: 1 }, { transform: `translate(calc(-50% + ${Math.cos(a) * d}px),calc(-50% + ${Math.sin(a) * d + 50}px)) scale(.2)`, opacity: 0 }], { duration: 900 + Math.random() * 500, easing: 'cubic-bezier(.2,.8,.3,1)' }).onfinish = () => s.remove(); } }
+function sheet(html){ closeSheet(true); const el = document.createElement('div'); el.className = 'scrim'; el.innerHTML = `<div class="sheet" role="dialog" aria-modal="true">${html}</div>`; document.body.appendChild(el); requestAnimationFrame(() => requestAnimationFrame(() => el.classList.add('open'))); el.addEventListener('mousedown', e => { if (e.target === el) closeSheet(); }); return el.firstElementChild; }
+function closeSheet(now){ const el = $('.scrim'); if (!el) return; if (now){ el.remove(); return; } el.classList.remove('open'); setTimeout(() => el.remove(), 280); }
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeSheet(); });
+function ring(pct, size, sw){ const r = (size - sw) / 2, c = 2 * Math.PI * r; const off = c * (1 - Math.max(0, Math.min(100, pct)) / 100); return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)"><circle class="ring-bg" cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke-width="${sw}"/><circle class="ring-fg" cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke-width="${sw}" stroke-linecap="round" style="stroke-dasharray:${c};stroke-dashoffset:${c}" data-off="${off}"/></svg>`; }
+function countUp(el, anim){
+  const to = +el.dataset.count; const fmt = v => el.dataset.fmt === 'inr' ? inr(v) : Math.round(v).toLocaleString('en-IN');
+  if (!anim || REDUCED || !to){ el.textContent = fmt(to); return; }
+  const t0 = performance.now(), D = 1100;
+  const step = now => { const k = Math.min(1, (now - t0) / D); el.textContent = fmt(k >= 1 ? to : to * (1 - Math.pow(2, -10 * k))); if (k < 1) requestAnimationFrame(step); };
+  requestAnimationFrame(step);
+}
+async function saveFile(name, data){
+  try { const d = window.claude && window.claude.use ? await window.claude.use('downloads') : null; if (d){ await d.save({ filename: name, data }); toast(t('saved')); return; } } catch (e) { if (e && e.code === 'declined') return; }
+  const sh = sheet(`<h3>${t('copyTitle')}</h3><p class="muted" style="margin-bottom:12px">${t('copyBody')}</p><textarea class="inp" id="cpy" style="min-height:160px" readonly>${esc(data)}</textarea><div class="acts"><button class="btn gold" data-act="copyCpy">${ic('copy', 18)} ${t('rcCopy')}</button><button class="btn" data-act="closeSheet">${t('done')}</button></div>`);
+  const ta = $('#cpy', sh); ta.focus(); ta.select();
+}
+async function copyText(text){ try { await navigator.clipboard.writeText(text); toast(t('copied')); } catch (e) { const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); toast(t('copied')); } catch (er) {} ta.remove(); } }
+const csvCell = v => '"' + String(v == null ? '' : v).replace(/"/g, '""') + '"';
+
+/* ---------- auth ---------- */
+function viewAuth(){
+  const a = U.auth; let body = '';
+  const errLine = `<p class="err" id="aerr">${esc(a.err || '')}</p>`;
+  const refField = `<div class="field"><label for="aref">${t('refOpt')}</label><input class="inp" id="aref" autocomplete="off" autocapitalize="characters" placeholder="TWF-XXXXXX-XX" value="${esc(a.ref)}"></div>`;
+  if (a.step === 'choose') body = `<button class="btn gold block shine" data-act="authGoogle"><span class="gmark">G</span>${t('google')}</button><button class="btn block" data-act="authPhone">${ic('phone', 18)}${t('phoneBtn')}</button>`;
+  else if (a.step === 'google') body = `<div class="field"><label for="aname">${t('yourName')}</label><input class="inp" id="aname" autocomplete="name" value="${esc(a.name)}"></div>${refField}${errLine}<button class="btn gold block" data-act="authGoogleGo">${t('cont')}</button><button class="btn ghost block" data-act="authBack">${t('back')}</button>`;
+  else if (a.step === 'phone') body = `<div class="field"><label for="aname">${t('yourName')}</label><input class="inp" id="aname" autocomplete="name" value="${esc(a.name)}"></div><div class="field"><label for="aph">${t('mobile')}</label><input class="inp" id="aph" inputmode="numeric" maxlength="10" autocomplete="tel-national" value="${esc(a.phone)}"></div>${errLine}<button class="btn gold block" data-act="authSendOtp">${t('sendOtp')}</button><button class="btn ghost block" data-act="authBack">${t('back')}</button>`;
+  else if (a.step === 'otp') body = `<div class="field"><label for="aotp">${t('otpLabel')}</label><input class="inp" id="aotp" inputmode="numeric" maxlength="6" autocomplete="one-time-code"><p class="muted" style="font-size:12px;margin-top:6px">${t('otpHint')}</p></div>${refField}${errLine}<button class="btn gold block" data-act="authVerify">${t('verify')}</button><button class="btn ghost block" data-act="authBack">${t('back')}</button>`;
+  else body = `<h3 class="serif" style="font-size:22px;margin-bottom:14px;text-align:center">${t('startTitle')}</h3><button class="btn gold block" data-act="startEmpty">${t('startEmpty')}</button><button class="btn block" data-act="startSample">${t('trySample')}</button>`;
+  return `<div class="auth"><div class="auth-lang"><button class="langpill" data-act="lang">${S.lang === 'bn' ? 'English' : 'বাংলা'}</button></div>
+  <svg class="seal" viewBox="0 0 132 132" aria-hidden="true"><circle class="tick" cx="66" cy="66" r="60"/><circle class="d" style="--c:339" cx="66" cy="66" r="54" stroke-width="1.6"/><circle class="d d2" style="--c:289" cx="66" cy="66" r="46" stroke-width="1"/><text x="66" y="80" text-anchor="middle">TW</text></svg>
+  <h1>${CONFIG.appName}</h1><p class="tag">${t('tagline')}</p><div class="auth-card" id="authBody">${body}</div><p class="fine">${t('demoNote')}</p></div>`;
+}
+function readAuth(){ const n = $('#aname'), p = $('#aph'), r = $('#aref'); if (n) U.auth.name = n.value.trim(); if (p) U.auth.phone = p.value.replace(/\D/g, ''); if (r) U.auth.ref = r.value.trim(); }
+function authErr(k){ U.auth.err = t(k); const e = $('#aerr'); if (e) e.textContent = U.auth.err; }
+function renderAuth(){ root.innerHTML = viewAuth(); const f = $('#aname') || $('#aph') || $('#aotp'); if (f && U.auth.step !== 'choose') setTimeout(() => f.focus({ preventScroll: true }), 50); }
+function finishAuth(){
+  const a = U.auth; S.user = { method: a.method, name: a.name };
+  const isNew = !S.tutor.refCode;
+  if (isNew){ S.tutor.name = a.name; S.tutor.phone = a.phone; S.tutor.refCode = makeCode('F'); }
+  if (a.ref){ const e = applyRef(a.ref); if (e && e !== 'refDone'){ authErr(e); S.user = null; if (isNew) S.tutor.refCode = ''; return false; } }
+  save(); return isNew;
+}
+
+/* ---------- shell ---------- */
+const NAV = [['home', 'home'], ['students', 'users'], ['att', 'cal'], ['fees', 'rupee'], ['rep', 'file']];
+const TITLE = { home: 'nav_home', students: 'nav_students', att: 'nav_att', fees: 'nav_fees', rep: 'nav_rep', pro: 't_pro', ref: 't_ref', set: 't_set' };
+const navBtn = (k, i) => `<button class="tab" data-act="nav" data-tab="${k}" data-k="${k}">${ic(i, 22)}<span>${t('nav_' + k)}</span></button>`;
+const sealSvg = `<svg class="mini-seal" viewBox="0 0 34 34" aria-hidden="true"><circle cx="17" cy="17" r="15.500" fill="none" stroke="var(--gold)" stroke-width="1.200"/><circle cx="17" cy="17" r="12.500" fill="none" stroke="var(--gold)" stroke-width=".7"/><text x="17" y="21.500" text-anchor="middle" style="font:600 11px var(--serif);fill:var(--gold-text)">TW</text></svg>`;
+function renderShell(){
+  root.innerHTML = `<div class="app"><aside class="rail"><div class="brand">${sealSvg.replace('mini-seal', 'rs')}<span>${CONFIG.appName}</span></div>${NAV.map(n => navBtn(n[0], n[1])).join('')}</aside>
+  <div class="col"><header class="top"><div class="t-left"><button class="iconbtn" id="backBtn" data-act="nav" data-tab="home" style="display:none" aria-label="${t('back')}">${ic('chl', 20)}</button>${sealSvg}<h2 id="pageTitle"></h2></div><div class="t-right" id="topRight"></div></header><main id="main"></main></div>
+  <nav class="tabs">${NAV.map(n => navBtn(n[0], n[1])).join('')}</nav></div>`;
+  renderTop(); renderNav(); renderMain(true);
+}
+function renderTop(){
+  const pro = isPro();
+  $('#topRight').innerHTML = `<button class="langpill" data-act="lang">${S.lang === 'bn' ? 'EN' : 'বাং'}</button><button class="chip-pro ${pro ? '' : 'free shine'}" data-act="nav" data-tab="pro">${ic('crown', 16)}<span>${pro ? t('proLeft', { d: proDays() }) : t('goPro')}</span></button><button class="avatar" data-act="menu" aria-label="${t('moreMenu')}">${esc(initials(S.tutor.name || 'T'))}</button>`;
+}
+function renderNav(){ $$('.tab').forEach(b => b.classList.toggle('on', b.dataset.k === U.tab)); const sec = !NAV.some(n => n[0] === U.tab); $('#backBtn').style.display = sec ? '' : 'none'; $('#pageTitle').textContent = t(TITLE[U.tab]); }
+function go(tab){ U.tab = tab; window.scrollTo(0, 0); renderNav(); renderMain(true); }
+function renderMain(anim){
+  const m = $('#main'); if (!m) return; const sy = window.scrollY;
+  m.className = anim ? 'stag' : ''; m.innerHTML = VIEWS[U.tab]();
+  if (anim) Array.from(m.children).forEach((c, i) => c.style.setProperty('--i', Math.min(i, 8)));
+  else window.scrollTo(0, sy);
+  after(m, anim);
+}
+function after(m, anim){
+  $$('[data-count]', m).forEach(el => countUp(el, anim));
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    $$('.ring-fg', m).forEach(c => { c.style.strokeDashoffset = c.dataset.off; });
+    $$('[data-h]', m).forEach(b => { b.style.height = b.dataset.h + 'px'; });
+    $$('[data-w]', m).forEach(b => { b.style.width = b.dataset.w + '%'; });
+  }));
+  const q = $('#q', m); if (q) q.addEventListener('input', e => { U.q = e.target.value; $('#sList').innerHTML = studentRows(); });
+  const di = $('#dateIn', m); if (di) di.addEventListener('change', e => { if (e.target.value){ U.date = e.target.value; renderMain(false); } });
+  if (U.tab === 'pro') mountQR();
+  if (U.tab === 'set') bindSettings(m);
+}
+
+/* ---------- views ---------- */
+const VIEWS = {};
+const emptyState = () => `<div class="empty"><h4>${t('emptyTitle')}</h4><p style="margin-bottom:16px">${t('emptyBody')}</p><button class="btn gold" data-act="addStudent">${ic('plus', 18)}${t('addFirst')}</button></div>`;
+function avatar(n, lg){ return `<span class="avatar ${lg ? 'lg' : ''}">${esc(initials(n))}</span>`; }
+
+VIEWS.home = function(){
+  const m = mk(new Date()), st = monthStats(m), pct = st.expected ? Math.round(st.collected / st.expected * 100) : 0;
+  const first = (S.tutor.name || '').split(' ')[0]; const hr = new Date().getHours();
+  const greet = t(hr < 12 ? 'goodMorning' : hr < 17 ? 'goodAfternoon' : 'goodEvening');
+  let html = `<section class="ledger pad hero"><div><p class="hello">${greet}, ${esc(first)}. ${esc(monthLabel(m))}</p><div class="big"><span data-count="${st.collected}" data-fmt="inr">${inr(0)}</span></div><p class="muted">${t('collectedOf', { x: inr(st.expected) })}</p>
+    <div class="pills">${st.dueList.length ? `<span class="pill due">${t('pending', { n: st.dueList.length })}</span>` : (st.expected ? `<span class="pill ok">${ic('check', 14)}${t('allClear')}</span>` : '')}</div></div>
+    <div class="ringbox">${ring(pct, 118, 9)}<div class="pct">${pct}%</div></div></section>`;
+  if (!S.students.length) return html + emptyState();
+  html += `<div class="two"><section><div class="secrow"><h3 class="sec">${t('feesToCollect')}</h3><button class="link" data-act="nav" data-tab="fees">${t('openFees')}</button></div>`;
+  html += st.dueList.length ? `<div class="rows">${st.dueList.slice(0, 4).map(r => `<div class="row">${avatar(r.s.name)}<div class="grow"><div class="nm">${esc(r.s.name)}</div><div class="sub">${esc(r.s.batch)}</div></div><span class="amt due num">${inr(r.i.due)}</span><button class="btn sm gold" data-act="collect" data-sid="${r.s.id}" data-m="${m}">${t('collect')}</button></div>`).join('')}</div>` : `<div class="empty" style="padding:24px 8px">${t('noDue')}</div>`;
+  html += `</section><section><h3 class="sec">${t('takeAtt')}</h3><div class="rows">${batches().map(b => {
+    const list = active().filter(s => s.batch === b); const day = S.attendance[iso(new Date())] || {}; const done = list.some(s => day[s.id]);
+    return `<div class="row tap" data-act="goAtt" data-batch="${esc(b)}"><div class="grow"><div class="nm">${esc(b)}</div><div class="sub">${t('nStudents', { n: list.length })}</div></div>${done ? `<span class="pill ok">${ic('check', 14)}${t('marked')}</span>` : `<span class="btn sm">${t('markNow')}</span>`}</div>`;
+  }).join('')}</div></section></div>`;
+  const months = Array.from({ length: 6 }, (_, k) => addMonths(m, k - 5)); const sums = months.map(x => S.payments.filter(p => p.m === x).reduce((a, p) => a + p.amt, 0)); const mx = Math.max(1, ...sums);
+  html += `<h3 class="sec">${t('last6')}</h3><section class="ledger pad"><div class="chart">${months.map((x, k) => `<div class="bar ${k === 5 ? 'now' : ''}"><em class="num">${sums[k] ? (sums[k] >= 1000 ? (sums[k] / 1000).toFixed(1).replace('.0', '') + 'k' : sums[k]) : ''}</em><b data-h="${Math.max(4, Math.round(sums[k] / mx * 120))}"></b><span>${esc(shortMonth(x))}</span></div>`).join('')}</div></section>`;
+  html += `<h3 class="sec">${isPro() ? t('t_pro') : t('goPro')}</h3>`;
+  if (isPro()) html += `<section class="ledger pad"><div class="row" style="border:0;padding:0">${ic('crown', 26)}<div class="grow"><div class="nm serif" style="font-size:18px">${t('proUntil', { d: new Date(S.planExpiry).toLocaleDateString(loc(), { day: 'numeric', month: 'short', year: 'numeric' }) })}</div></div></div></section>`;
+  else { const n = active().length; html += `<section class="ledger pad"><p style="margin-bottom:10px">${t('freeUsed', { n, max: CONFIG.freeLimit })}</p><div class="meter"><i data-w="${Math.min(100, n / CONFIG.freeLimit * 100)}" style="width:0"></i></div><div style="margin-top:16px"><button class="btn gold shine" data-act="nav" data-tab="pro">${ic('crown', 18)}${t('goPro')}</button></div></section>`; }
+  html += `<section class="ledger pad" style="margin-top:16px;display:flex;gap:16px;align-items:center;flex-wrap:wrap"><span style="color:var(--gold-text)">${ic('gift', 30)}</span><div style="flex:1;min-width:200px"><div class="nm serif" style="font-size:18px">${t('inviteTitle')}</div><p class="muted" style="font-size:14px">${t('inviteBody')}</p></div><button class="btn" data-act="nav" data-tab="ref">${t('invite')}</button></section>`;
+  return html;
+};
+
+function studentRows(){
+  const q = U.q.trim().toLowerCase(); const m = mk(new Date());
+  const list = S.students.filter(s => (U.bf === 'all' || s.batch === U.bf) && (!q || s.name.toLowerCase().includes(q) || (s.guardian || '').toLowerCase().includes(q))).sort((a, b) => (a.end ? 1 : 0) - (b.end ? 1 : 0) || a.name.localeCompare(b.name));
+  if (!list.length) return `<div class="empty">${t('noMatch')}</div>`;
+  return `<div class="rows">${list.map(s => {
+    const a = attStats(s.id, m); const f = s.end ? null : feeInfo(s, m);
+    return `<div class="row tap" data-act="student" data-sid="${s.id}">${avatar(s.name)}<div class="grow"><div class="nm">${esc(s.name)}</div><div class="sub">${s.cls ? esc(t('fClass')) + ' ' + esc(s.cls) + ', ' : ''}${esc(s.batch)}</div></div>${s.end ? `<span class="pill">${t('left')}</span>` : `<div style="text-align:right"><div class="amt num ${f.due ? 'due' : 'ok'}" style="font-size:15px">${f.due ? inr(f.due) : t('paid')}</div><div class="sub">${a.pct === null ? '' : a.pct + '%'}</div></div>`}</div>`;
+  }).join('')}</div>`;
+}
+VIEWS.students = function(){
+  const bs = batches(); const n = active().length;
+  let html = `<div class="search">${ic('search', 18)}<input class="inp" id="q" type="search" placeholder="${t('searchPh')}" value="${esc(U.q)}" autocomplete="off"></div>`;
+  if (!S.students.length) return html + emptyState() + fab();
+  html += `<div class="chips"><button class="chipb ${U.bf === 'all' ? 'on' : ''}" data-act="bf" data-b="all">${t('allBatches')}</button>${bs.map(b => `<button class="chipb ${U.bf === b ? 'on' : ''}" data-act="bf" data-b="${esc(b)}">${esc(b)}</button>`).join('')}</div>`;
+  if (!isPro()) html += `<p class="muted" style="font-size:13px;margin-bottom:6px">${t('freeUsed', { n, max: CONFIG.freeLimit })}</p><div class="meter" style="margin-bottom:14px"><i data-w="${Math.min(100, n / CONFIG.freeLimit * 100)}" style="width:0"></i></div>`;
+  return html + `<div id="sList">${studentRows()}</div>` + fab();
+};
+const fab = () => `<button class="fab" data-act="addStudent" aria-label="${t('addStudent')}">${ic('plus', 26)}</button>`;
+
+VIEWS.att = function(){
+  const bs = batches(); if (!bs.length) return `<div class="empty">${t('noBatch')}</div>`;
+  if (!bs.includes(U.batch)) U.batch = bs[0];
+  const list = active().filter(s => s.batch === U.batch).sort((a, b) => a.name.localeCompare(b.name)); const day = S.attendance[U.date] || {};
+  let html = `<div class="datebar"><button class="iconbtn" data-act="dshift" data-n="-1" aria-label="-1">${ic('chl', 18)}</button><input class="inp" type="date" id="dateIn" value="${U.date}"><button class="iconbtn" data-act="dshift" data-n="1" aria-label="+1">${ic('chr', 18)}</button>${U.date !== iso(new Date()) ? `<button class="chipb" data-act="dtoday">${t('today')}</button>` : ''}</div><p class="muted" style="margin:-4px 0 10px;font-size:14px">${esc(dateLabel(U.date))}</p>`;
+  html += `<div class="chips">${bs.map(b => `<button class="chipb ${U.batch === b ? 'on' : ''}" data-act="batch" data-b="${esc(b)}">${esc(b)}</button>`).join('')}</div>`;
+  html += `<div class="pills" style="margin:0 0 12px" id="attSum">${attSummary(list)}</div><div class="acts" style="display:flex;gap:10px;margin-bottom:10px"><button class="btn sm gold" data-act="markAll">${ic('check', 16)}${t('markAll')}</button><button class="btn sm ghost" data-act="clearAtt">${t('clearAll')}</button></div>`;
+  html += `<div class="rows">${list.map(s => `<div class="row" data-row="${s.id}">${avatar(s.name)}<div class="grow"><div class="nm">${esc(s.name)}</div></div><div class="pa"><button class="p ${day[s.id] === 'P' ? 'on' : ''}" data-act="att" data-sid="${s.id}" data-v="P" aria-label="${t('present')}">P</button><button class="a ${day[s.id] === 'A' ? 'on' : ''}" data-act="att" data-sid="${s.id}" data-v="A" aria-label="${t('absent')}">A</button></div></div>`).join('')}</div>`;
+  return html;
+};
+function attSummary(list){ const day = S.attendance[U.date] || {}; let p = 0, a = 0; list.forEach(s => { if (day[s.id] === 'P') p++; else if (day[s.id] === 'A') a++; }); return `<span class="pill ok">${t('present')} ${p}</span><span class="pill due">${t('absent')} ${a}</span><span class="pill">${t('unmarked')} ${list.length - p - a}</span>`; }
+function batchList(){ return active().filter(s => s.batch === U.batch); }
+
+function monthBar(){ return `<div class="mbar"><button class="iconbtn" data-act="mshift" data-n="-1" aria-label="-1">${ic('chl', 18)}</button><h3>${esc(monthLabel(U.month))}</h3><button class="iconbtn" data-act="mshift" data-n="1" aria-label="+1">${ic('chr', 18)}</button></div>`; }
+VIEWS.fees = function(){
+  if (!S.students.length) return emptyState();
+  const st = monthStats(U.month); const pct = st.expected ? Math.round(st.collected / st.expected * 100) : 0;
+  const rows = U.ftab === 'due' ? st.dueList : U.ftab === 'paid' ? st.paidList : st.all;
+  let html = monthBar() + `<section class="ledger pad"><div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap"><div><p class="muted" style="font-size:13px">${t('collected')}</p><div class="amt num" style="font-size:30px;color:var(--gold-text)">${inr(st.collected)}</div></div><div style="text-align:right"><p class="muted" style="font-size:13px">${t('stillDue')}</p><div class="amt num due" style="font-size:30px">${inr(st.due)}</div></div></div><div class="meter" style="margin:16px 0 8px"><i data-w="${pct}" style="width:0"></i></div><p class="muted" style="font-size:13px">${t('expected')}: ${inr(st.expected)}</p></section>`;
+  html += `<div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:18px 0 8px"><div class="seg"><button class="${U.ftab === 'due' ? 'on' : ''}" data-act="ftab" data-v="due">${t('dueTab')} ${st.dueList.length}</button><button class="${U.ftab === 'paid' ? 'on' : ''}" data-act="ftab" data-v="paid">${t('paidTab')} ${st.paidList.length}</button><button class="${U.ftab === 'all' ? 'on' : ''}" data-act="ftab" data-v="all">${t('allTab')}</button></div>${st.dueList.length ? `<button class="btn sm" data-act="reminders">${ic('send', 16)}${t('sendReminders')}</button>` : ''}</div>`;
+  if (!rows.length) return html + `<div class="empty">${U.ftab === 'due' ? t('noDue') : t('noneHere')}</div>`;
+  return html + `<div class="rows">${rows.map(r => {
+    const { s, i } = r; const pay = S.payments.filter(p => p.sid === s.id && p.m === U.month).slice(-1)[0];
+    const sub = i.paid && i.due ? t('partial', { p: inr(i.paid), d: inr(i.due) }) : esc(s.batch);
+    return `<div class="row">${avatar(s.name)}<div class="grow"><div class="nm">${esc(s.name)}</div><div class="sub">${sub}</div></div>` + (i.due
+      ? `<span class="amt due num">${inr(i.due)}</span><a class="iconbtn" style="width:36px;height:36px" href="${wa(s.phone, reminderText(s, U.month))}" target="_blank" rel="noopener" aria-label="${t('remind')}">${ic('send', 16)}</a><button class="btn sm gold" data-act="collect" data-sid="${s.id}" data-m="${U.month}">${t('collect')}</button>`
+      : `<span class="amt ok num">${inr(i.paid)}</span>${pay ? `<button class="btn sm ghost" data-act="receipt" data-pid="${pay.id}">${t('receipt')}</button>` : ''}`) + `</div>`;
+  }).join('')}</div>`;
+};
+
+VIEWS.rep = function(){
+  if (!S.students.length) return emptyState();
+  const list = S.students.filter(s => inMonth(s, U.month)).sort((a, b) => a.name.localeCompare(b.name));
+  if (!list.length) return monthBar() + `<div class="empty">${t('noneHere')}</div>`;
+  return monthBar() + `<div class="rows">${list.map(s => {
+    const a = attStats(s.id, U.month); const mr = (S.marks[U.month] || {})[s.id]; const has = mr && mr.got !== '' && mr.got !== undefined;
+    return `<div class="row tap" data-act="report" data-sid="${s.id}"><div class="ringbox" style="width:46px;height:46px">${ring(a.pct || 0, 46, 4)}<div class="pct" style="font-size:11px;font-family:var(--sans);font-weight:600">${a.pct === null ? '-' : a.pct + '%'}</div></div><div class="grow"><div class="nm">${esc(s.name)}</div><div class="sub">${a.n ? t('attended', { p: a.p, n: a.n }) : t('noClasses')}${has ? ', ' + esc(mr.test || '') + ' ' + mr.got + '/' + mr.full : ''}</div></div>${has ? `<span class="pill ok">${t('repReady')}</span>` : `<span class="btn sm">${t('repDraft')}</span>`}</div>`;
+  }).join('')}</div>`;
+};
+
+function planPrice(){ return U.plan === 'yearly' ? CONFIG.yearlyPrice : CONFIG.monthlyPrice; }
+VIEWS.pro = function(){
+  const pro = isPro(); const price = planPrice();
+  let html = `<section class="ledger pad"><h3 class="serif" style="font-size:28px;margin-bottom:6px;color:var(--gold-text)">${t('proTitle')}</h3><p class="muted">${t('proSub', { max: CONFIG.freeLimit })}</p>${pro ? `<div class="pills"><span class="pill ok">${ic('check', 14)}${t('proUntil', { d: new Date(S.planExpiry).toLocaleDateString(loc(), { day: 'numeric', month: 'short', year: 'numeric' }) })}</span></div>` : ''}</section>`;
+  html += `<div class="plans"><button class="plan ${U.plan === 'monthly' ? 'on' : ''}" data-act="plan" data-v="monthly"><div class="nm" style="font-weight:600">${t('monthly')}</div><div class="pr num">${inr(CONFIG.monthlyPrice)}</div><div class="muted">${t('perMonth')}</div></button><button class="plan ${U.plan === 'yearly' ? 'on' : ''}" data-act="plan" data-v="yearly"><span class="badge">${t('bestValue')}</span><div class="nm" style="font-weight:600">${t('yearly')}</div><div class="pr num">${inr(CONFIG.yearlyPrice)}</div><div class="muted">${t('perYear')}, ${t('save2')}</div></button></div>`;
+  const upiLink = `upi://pay?pa=${encodeURIComponent(CONFIG.ownerUpi)}&pn=${encodeURIComponent(CONFIG.appName)}&am=${price}&cu=INR&tn=${encodeURIComponent('Tuition Wala Pro')}`;
+  const planName = U.plan === 'yearly' ? t('yearly') : t('monthly');
+  const msg = t('proMsg', { p: inr(price), plan: planName, n: S.tutor.name, ph: S.tutor.phone, ref: S.refFrom ? t('refLine', { c: S.refFrom }) : '' });
+  html += `<div class="steps"><div class="step"><span class="n">1</span><div><h4>${t('step1')}</h4><a class="btn gold" href="${esc(upiLink)}">${t('payBtn', { p: inr(price) })}</a><br><div class="qr" id="qr"></div><p class="muted" style="font-size:13px;margin-top:8px">${t('scanNote')}</p></div></div>
+  <div class="step"><span class="n">2</span><div><h4>${t('step2')}</h4><a class="btn" href="${wa(CONFIG.ownerWhatsApp, msg)}" target="_blank" rel="noopener">${ic('send', 16)}${t('proofBtn')}</a><p class="muted" style="font-size:13px;margin-top:8px">${t('proofHelp')}</p></div></div>
+  <div class="step"><span class="n">3</span><div><h4>${t('step3')}</h4><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="inp" id="pcode" style="flex:1 1 200px;text-transform:uppercase" placeholder="TWM-XXXXXX-XX" autocomplete="off" autocapitalize="characters"><button class="btn gold" data-act="redeem">${t('redeem')}</button></div><p class="err" id="perr" style="margin-top:8px"></p></div></div></div>`;
+  return html;
+};
+function mountQR(){
+  const el = $('#qr'); if (!el) return; if (typeof QRCode === 'undefined'){ el.style.display = 'none'; return; }
+  try { el.innerHTML = ''; new QRCode(el, { text: `upi://pay?pa=${CONFIG.ownerUpi}&pn=${encodeURIComponent(CONFIG.appName)}&am=${planPrice()}&cu=INR`, width: 132, height: 132, colorDark: '#0B1426', colorLight: '#F4EFE6', correctLevel: QRCode.CorrectLevel.M }); } catch (e) { el.style.display = 'none'; }
+}
+
+VIEWS.ref = function(){
+  const code = S.tutor.refCode; const rw = S.used.filter(u => u.type === 'R'); const days = rw.reduce((a, u) => a + u.days, 0);
+  let html = `<section class="ledger pad" style="text-align:center"><p class="muted">${t('yourCode')}</p><div class="codebox num">${esc(code)}</div><div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap"><a class="btn gold shine" id="shareWa" href="${wa('', t('refShare', { c: code, d: CONFIG.trialDays, u: location.href.split('#')[0] }))}" target="_blank" rel="noopener">${ic('send', 16)}${t('shareWa')}</a><button class="btn" data-act="copyRef">${ic('copy', 16)}${t('copyCode')}</button></div></section>`;
+  html += `<h3 class="sec">${t('refHow')}</h3><div class="steps"><div class="step"><span class="n">1</span><div>${t('ref1')}</div></div><div class="step"><span class="n">2</span><div>${t('ref2', { d: CONFIG.trialDays })}</div></div><div class="step"><span class="n">3</span><div>${t('ref3', { d: CONFIG.rewardDays })}</div></div></div>`;
+  html += `<h3 class="sec">${t('rewards')}</h3>` + (rw.length ? `<section class="ledger pad"><div class="amt num" style="font-size:22px;color:var(--gold-text)">${t('rewardDays', { d: days, n: rw.length })}</div></section>` : `<p class="muted">${t('noRewards')}</p><div style="margin-top:12px"><button class="btn" data-act="nav" data-tab="pro">${t('openPro')}</button></div>`);
+  if (!S.refFrom) html += `<h3 class="sec">${t('haveCode')}</h3><div style="display:flex;gap:10px;flex-wrap:wrap"><input class="inp" id="rcode" style="flex:1 1 200px;text-transform:uppercase" placeholder="TWF-XXXXXX-XX" autocapitalize="characters" autocomplete="off"><button class="btn gold" data-act="applyRef">${t('applyRef')}</button></div><p class="err" id="rerr" style="margin-top:8px"></p>`;
+  return html;
+};
+
+VIEWS.set = function(){
+  return `<h3 class="sec">${t('setProfile')}</h3><div class="field"><label for="sName">${t('yourName')}</label><input class="inp" id="sName" value="${esc(S.tutor.name)}"></div><div class="field"><label for="sUpi">${t('yourUpi')}</label><input class="inp" id="sUpi" placeholder="name@upi" value="${esc(S.tutor.upi)}"></div>
+  <div class="field"><label for="sTpl">${t('tplLabel')}</label><textarea class="inp" id="sTpl">${esc(tplText())}</textarea><p class="muted" style="font-size:12px;margin-top:6px">${t('tplHelp')}</p><button class="btn sm ghost" style="margin-top:8px" data-act="resetTpl">${t('resetTpl')}</button></div>
+  <h3 class="sec">${t('language')}</h3><div class="seg"><button class="${S.lang === 'bn' ? 'on' : ''}" data-act="setLang" data-v="bn">বাংলা</button><button class="${S.lang === 'en' ? 'on' : ''}" data-act="setLang" data-v="en">English</button></div>
+  <h3 class="sec">${t('theme')}</h3><div class="seg"><button class="${S.theme === 'dark' ? 'on' : ''}" data-act="setTheme" data-v="dark">${t('dark')}</button><button class="${S.theme === 'light' ? 'on' : ''}" data-act="setTheme" data-v="light">${t('light')}</button></div>
+  <h3 class="sec">${t('backup')}</h3><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn" data-act="expStudents">${ic('save', 16)}${t('exportStudents')}</button><button class="btn" data-act="expPay">${ic('save', 16)}${t('exportPay')}</button></div>
+  <h3 class="sec">${t('dataSec')}</h3><div style="display:flex;gap:10px;flex-wrap:wrap"><button class="btn danger" data-act="clearData">${t('clearData')}</button><button class="btn ghost" data-act="signOut">${ic('out', 16)}${t('signOut')}</button></div>`;
+};
+function bindSettings(m){
+  $('#sName', m).addEventListener('change', e => { S.tutor.name = e.target.value.trim() || S.tutor.name; save(); renderTop(); });
+  $('#sUpi', m).addEventListener('change', e => { S.tutor.upi = e.target.value.trim(); save(); });
+  $('#sTpl', m).addEventListener('change', e => { S.tpl[S.lang] = e.target.value; save(); });
+}
+
+/* ---------- sheets ---------- */
+function openStudentForm(id){
+  const s = id ? byId(id) : { name: '', cls: '', batch: U.bf !== 'all' ? U.bf : '', guardian: '', phone: '', fee: '', since: mk(new Date()) };
+  const sh = sheet(`<h3>${id ? t('editStudent') : t('addStudent')}</h3>
+  <div class="field"><label for="fn">${t('fName')}</label><input class="inp" id="fn" value="${esc(s.name)}" autocomplete="off"></div>
+  <div class="grid2"><div class="field"><label for="fc">${t('fClass')}</label><input class="inp" id="fc" value="${esc(s.cls)}" autocomplete="off"></div><div class="field"><label for="ff">${t('fFee')}</label><input class="inp" id="ff" inputmode="numeric" value="${esc(s.fee)}"></div></div>
+  <div class="field"><label for="fb">${t('fBatch')}</label><input class="inp" id="fb" list="bl" value="${esc(s.batch)}" autocomplete="off"><datalist id="bl">${batches().map(b => `<option value="${esc(b)}">`).join('')}</datalist></div>
+  <div class="field"><label for="fg">${t('fGuardian')}</label><input class="inp" id="fg" value="${esc(s.guardian)}" autocomplete="off"></div>
+  <div class="grid2"><div class="field"><label for="fp">${t('fPhone')}</label><input class="inp" id="fp" inputmode="numeric" maxlength="10" value="${esc(s.phone)}"></div><div class="field"><label for="fs">${t('fSince')}</label><input class="inp" id="fs" type="month" value="${esc(s.since)}"></div></div>
+  <p class="err" id="ferr"></p><div class="acts"><button class="btn" data-act="closeSheet">${t('cancel')}</button><button class="btn gold" id="fsave">${t('save')}</button></div>`);
+  $('#fsave', sh).addEventListener('click', () => {
+    const name = $('#fn', sh).value.trim(), fee = parseInt($('#ff', sh).value, 10), phone = $('#fp', sh).value.replace(/\D/g, ''); const err = $('#ferr', sh);
+    if (!name){ err.textContent = t('needName'); return; } if (!fee || fee < 0){ err.textContent = t('needFee'); return; } if (phone && !/^[6-9]\d{9}$/.test(phone)){ err.textContent = t('needPhone'); return; }
+    const data = { name, cls: $('#fc', sh).value.trim(), batch: $('#fb', sh).value.trim() || 'General', guardian: $('#fg', sh).value.trim(), phone, fee, since: $('#fs', sh).value || mk(new Date()) };
+    if (id) Object.assign(byId(id), data); else S.students.push(Object.assign({ id: uid(), end: null }, data));
+    save(); closeSheet(); renderMain(false); toast(t('save') + ': ' + name);
+  });
+  setTimeout(() => $('#fn', sh).focus({ preventScroll: true }), 300);
+}
+function openStudent(id){
+  const s = byId(id); if (!s) return; const cur = mk(new Date()); const a = attStats(id, cur);
+  const strip = Array.from({ length: 12 }, (_, k) => addMonths(cur, k - 11)).map(m => { if (!inMonth(s, m)) return `<span class="dot" title="${m}" style="opacity:.25"></span>`; const i = feeInfo(s, m); return `<span class="dot ${i.due ? 'due' : 'ok'}" title="${esc(monthLabel(m))}" style="width:14px;height:14px"></span>`; }).join('<span style="flex:1"></span>');
+  const sh = sheet(`<div style="display:flex;gap:14px;align-items:center;margin-bottom:16px">${avatar(s.name, true)}<div><h3 style="margin:0">${esc(s.name)}</h3><p class="muted">${esc(s.batch)}${s.cls ? ', ' + t('fClass') + ' ' + esc(s.cls) : ''}</p></div></div>
+  <div class="kv"><span>${t('fGuardian')}</span><b>${esc(s.guardian || '-')}</b></div><div class="kv"><span>${t('fFee')}</span><b class="num">${inr(s.fee)}</b></div><div class="kv"><span>${t('attThisMonth')}</span><b class="num">${a.pct === null ? t('noClasses') : a.pct + '% (' + t('attended', { p: a.p, n: a.n }) + ')'}</b></div>
+  <p class="muted" style="font-size:13px;margin:16px 0 8px">${t('feeHistory')}</p><div style="display:flex;align-items:center">${strip}</div>
+  <div class="acts">${s.end ? '' : `<button class="btn gold" data-act="collect" data-sid="${id}" data-m="${cur}">${t('collectFee')}</button>`}<a class="btn" href="${wa(s.phone, '')}" target="_blank" rel="noopener">${ic('send', 16)}${t('msgGuardian')}</a></div>
+  <div class="acts"><button class="btn ghost" data-act="editStudent" data-sid="${id}">${t('editStudent')}</button>${s.end ? '' : `<button class="btn ghost" data-act="leftStudent" data-sid="${id}">${t('markLeft')}</button>`}<button class="btn danger" data-act="delStudent" data-sid="${id}">${t('delete')}</button></div>`);
+  return sh;
+}
+function openLimit(){
+  sheet(`<h3>${t('limitTitle')}</h3><p class="muted">${t('limitBody', { max: CONFIG.freeLimit })}</p><div class="acts"><button class="btn" data-act="closeSheet">${t('cancel')}</button><button class="btn gold shine" data-act="goProSheet">${ic('crown', 18)}${t('goPro')}</button></div>`);
+}
+function openCollect(sid, m){
+  const s = byId(sid); if (!s) return; const i = feeInfo(s, m); const todayS = iso(new Date());
+  const sh = sheet(`<h3>${t('collectFee')}</h3><div class="kv"><span>${esc(s.name)}</span><b>${esc(monthLabel(m))}</b></div>
+  <div class="field" style="margin-top:14px"><label for="cAmt">${t('amount')}</label><input class="inp num" id="cAmt" inputmode="numeric" value="${i.due || s.fee}"></div>
+  <div class="field"><label>${t('mode')}</label><div class="seg full" id="cMode"><button class="on" data-v="cash" type="button">${t('cash')}</button><button data-v="upi" type="button">${t('upi')}</button></div></div>
+  <div class="field"><label for="cDate">${t('date')}</label><input class="inp" type="date" id="cDate" value="${todayS}"></div><p class="err" id="cerr"></p>
+  <div class="acts"><button class="btn" data-act="closeSheet">${t('cancel')}</button><button class="btn gold" id="cSave">${t('recordPay')}</button></div>`);
+  let mode = 'cash';
+  $$('#cMode button', sh).forEach(b => b.addEventListener('click', () => { mode = b.dataset.v; $$('#cMode button', sh).forEach(x => x.classList.toggle('on', x === b)); }));
+  $('#cSave', sh).addEventListener('click', () => {
+    const amt = parseInt($('#cAmt', sh).value, 10); if (!amt || amt < 1){ $('#cerr', sh).textContent = t('needAmt'); return; }
+    S.receiptNo++; const d = $('#cDate', sh).value || todayS; const no = 'TW-' + d.slice(2, 4) + d.slice(5, 7) + '-' + String(S.receiptNo).padStart(4, '0');
+    const p = { id: uid(), sid, m, amt, mode, date: d, no }; S.payments.push(p); save(); renderMain(false); openReceipt(p.id, true);
+  });
+  setTimeout(() => { const a = $('#cAmt', sh); if (a) a.select(); }, 320);
+}
+function openReceipt(pid, fresh_){
+  const p = S.payments.find(x => x.id === pid); if (!p) return; const s = byId(p.sid) || { name: '', phone: '' };
+  const sh = sheet(`<div class="ledger receipt">${fresh_ ? `<div class="stamp">${ic('check', 16)}${t('recorded')}</div>` : ''}<div class="rt" style="margin-top:${fresh_ ? 12 : 0}px">${t('rcTitle')}</div><p class="muted" style="font-size:13px">${esc(S.tutor.name || CONFIG.appName)}</p><div class="ra num">${inr(p.amt)}</div>
+  <div class="kv"><span>${t('rcNo')}</span><b class="num">${esc(p.no)}</b></div><div class="kv"><span>${t('rcFor')}</span><b>${esc(s.name)}</b></div><div class="kv"><span>${t('rcMonth')}</span><b>${esc(monthLabel(p.m))}</b></div><div class="kv"><span>${t('rcMode')}</span><b>${p.mode === 'upi' ? t('upi') : t('cash')}</b></div><div class="kv"><span>${t('date')}</span><b>${esc(dateLabel(p.date))}</b></div></div>
+  <div class="acts"><a class="btn gold" href="${wa(s.phone, receiptText(p))}" target="_blank" rel="noopener">${ic('send', 16)}${t('rcSend')}</a><button class="btn" data-act="copyReceipt" data-pid="${pid}">${ic('copy', 16)}${t('rcCopy')}</button><button class="btn" data-act="saveReceipt" data-pid="${pid}">${ic('save', 16)}${t('rcSave')}</button></div><div class="acts"><button class="btn ghost" data-act="closeSheet">${t('done')}</button></div>`);
+  return sh;
+}
+function receiptHtml(p){
+  const s = byId(p.sid) || { name: '' };
+  return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(p.no)}</title><style>body{font-family:Georgia,serif;background:#f6f1e7;color:#14213d;display:grid;place-items:center;min-height:100vh;margin:0}.c{width:340px;padding:30px;border:2px solid #b08a32;outline:1px solid #b08a32;outline-offset:-8px;background:#fcfaf5;text-align:center}h1{font-size:22px;margin:0 0 4px}.a{font-size:44px;color:#8a6a1f;margin:16px 0}p{margin:6px 0;font-size:15px}small{color:#5e6a86}</style></head><body><div class="c"><h1>${esc(S.tutor.name || CONFIG.appName)}</h1><small>${esc(t('rcTitle'))}</small><div class="a">${inr(p.amt)}</div><p>${esc(t('rcNo'))}: <b>${esc(p.no)}</b></p><p>${esc(s.name)}</p><p>${esc(monthLabel(p.m))}, ${p.mode === 'upi' ? 'UPI' : esc(t('cash'))}</p><p>${esc(p.date)}</p><small>${esc(t('thanks') === 'thanks' ? 'Thank you' : t('thanks'))}</small></div></body></html>`;
+}
+function openReminders(){
+  const m = U.month; const st = monthStats(m);
+  sheet(`<h3>${t('reminderFor', { m: monthLabel(m) })}</h3><div class="rows" style="border-top:0">${st.dueList.map(r => `<div class="row" style="padding:11px 0"><div class="grow"><div class="nm">${esc(r.s.name)}</div><div class="sub num">${inr(r.i.due)}</div></div><a class="btn sm ${S.reminded[m + r.s.id] ? 'ghost' : 'gold'}" data-act="remSent" data-k="${m + r.s.id}" href="${wa(r.s.phone, reminderText(r.s, m))}" target="_blank" rel="noopener">${S.reminded[m + r.s.id] ? ic('check', 14) + t('sent') : ic('send', 14) + t('send')}</a></div>`).join('')}</div><div class="acts"><button class="btn" data-act="closeSheet">${t('done')}</button></div>`);
+}
+function openReport(sid){
+  const s = byId(sid); if (!s) return; const m = U.month; const a = attStats(sid, m); const cur = (S.marks[m] || {})[sid] || { test: '', got: '', full: '', note: '' };
+  const sh = sheet(`<h3>${esc(s.name)}</h3><div class="pills" style="margin:-6px 0 14px"><span class="pill">${esc(monthLabel(m))}</span><span class="pill ${a.pct !== null && a.pct >= 75 ? 'ok' : ''}">${a.n ? t('attended', { p: a.p, n: a.n }) + ', ' + a.pct + '%' : t('noClasses')}</span></div>
+  <div class="field"><label for="rt">${t('testName')}</label><input class="inp" id="rt" value="${esc(cur.test)}" autocomplete="off"></div><div class="grid2"><div class="field"><label for="rg">${t('got')}</label><input class="inp" id="rg" inputmode="decimal" value="${esc(cur.got)}"></div><div class="field"><label for="rf">${t('full')}</label><input class="inp" id="rf" inputmode="decimal" value="${esc(cur.full)}"></div></div>
+  <div class="field"><label for="rn">${t('remark')}</label><input class="inp" id="rn" value="${esc(cur.note)}" autocomplete="off"></div><p class="muted" style="font-size:13px;margin-bottom:6px">${t('preview')}</p><div class="ledger" style="padding:16px;font-size:14px;white-space:pre-wrap" id="rprev"></div>
+  <div class="acts"><a class="btn gold" id="rsend" target="_blank" rel="noopener">${ic('send', 16)}${t('sendReport')}</a><button class="btn" id="rsave">${t('save')}</button></div>`.replace('${t(\'sendReport\')}', ''));
+  const upd = () => { (S.marks[m] = S.marks[m] || {})[sid] = { test: $('#rt', sh).value.trim(), got: $('#rg', sh).value.trim(), full: $('#rf', sh).value.trim(), note: $('#rn', sh).value.trim() }; const txt = reportText(s, m); $('#rprev', sh).textContent = txt; $('#rsend', sh).href = wa(s.phone, txt); };
+  $$('input', sh).forEach(i => i.addEventListener('input', upd)); upd();
+  $('#rsave', sh).addEventListener('click', () => { upd(); save(); closeSheet(); renderMain(false); toast(t('reportSaved')); });
+  $('#rsend', sh).addEventListener('click', () => { upd(); save(); });
+}
+function confirmSheet(title, body, btnLabel, fn){
+  const sh = sheet(`<h3>${title}</h3><p class="muted">${body}</p><div class="acts"><button class="btn" data-act="closeSheet">${t('cancel')}</button><button class="btn danger" id="cok">${btnLabel}</button></div>`);
+  $('#cok', sh).addEventListener('click', () => { closeSheet(); fn(); });
+}
+function openMenu(){
+  sheet(`<h3>${esc(S.tutor.name)}</h3><div class="rows" style="border-top:0">
+  <div class="row tap" data-act="nav" data-tab="ref" data-close="1"><span style="color:var(--gold-text)">${ic('gift', 22)}</span><div class="grow nm">${t('t_ref')}</div>${ic('chr', 18)}</div>
+  <div class="row tap" data-act="nav" data-tab="pro" data-close="1"><span style="color:var(--gold-text)">${ic('crown', 22)}</span><div class="grow nm">${t('t_pro')}</div>${ic('chr', 18)}</div>
+  <div class="row tap" data-act="nav" data-tab="set" data-close="1"><span style="color:var(--gold-text)">${ic('sliders', 22)}</span><div class="grow nm">${t('t_set')}</div>${ic('chr', 18)}</div>
+  <div class="row tap" data-act="signOut"><span style="color:var(--gold-text)">${ic('out', 22)}</span><div class="grow nm">${t('signOut')}</div></div></div>`);
+}
+
+/* ---------- actions ---------- */
+const ACT = {
+  nav(a){ if (a.dataset.close) closeSheet(true); go(a.dataset.tab); },
+  lang(){ S.lang = S.lang === 'bn' ? 'en' : 'bn'; save(); boot(false); },
+  setLang(a){ S.lang = a.dataset.v; save(); boot(false); },
+  setTheme(a){ S.theme = a.dataset.v; save(); document.documentElement.dataset.theme = S.theme; renderMain(false); },
+  menu(){ openMenu(); },
+  closeSheet(){ closeSheet(); },
+  goProSheet(){ closeSheet(true); go('pro'); },
+  authGoogle(){ U.auth = { step: 'google', method: 'google', name: '', phone: '', ref: '', err: '' }; renderAuth(); },
+  authPhone(){ U.auth = { step: 'phone', method: 'phone', name: '', phone: '', ref: '', err: '' }; renderAuth(); },
+  authBack(){ readAuth(); U.auth.step = U.auth.step === 'otp' ? 'phone' : 'choose'; U.auth.err = ''; renderAuth(); },
+  authGoogleGo(){ readAuth(); if (!U.auth.name) return authErr('needName'); const isNew = finishAuth(); if (S.user) afterAuth(isNew); },
+  authSendOtp(){ readAuth(); if (!U.auth.name) return authErr('needName'); if (!/^[6-9]\d{9}$/.test(U.auth.phone)) return authErr('needPhone'); U.auth.step = 'otp'; U.auth.err = ''; renderAuth(); },
+  authVerify(){ readAuth(); const v = ($('#aotp') || {}).value; if (v !== '123456') return authErr('otpBad'); const isNew = finishAuth(); if (S.user) afterAuth(isNew); },
+  startEmpty(){ renderShell(); toast(t('welcome', { name: S.tutor.name })); },
+  startSample(){ seedSample(); save(); renderShell(); toast(t('welcome', { name: S.tutor.name })); },
+  addStudent(){ if (!isPro() && active().length >= CONFIG.freeLimit) return openLimit(); openStudentForm(); },
+  editStudent(a){ openStudentForm(a.dataset.sid); },
+  student(a){ openStudent(a.dataset.sid); },
+  bf(a){ U.bf = a.dataset.b; renderMain(false); },
+  batch(a){ U.batch = a.dataset.b; renderMain(false); },
+  goAtt(a){ U.batch = a.dataset.batch; U.date = iso(new Date()); go('att'); },
+  dshift(a){ const [y, m, d] = U.date.split('-').map(Number); U.date = iso(new Date(y, m - 1, d + Number(a.dataset.n))); renderMain(false); },
+  dtoday(){ U.date = iso(new Date()); renderMain(false); },
+  att(a){
+    const sid = a.dataset.sid, v = a.dataset.v; const day = S.attendance[U.date] = S.attendance[U.date] || {};
+    if (day[sid] === v) delete day[sid]; else day[sid] = v; if (!Object.keys(day).length) delete S.attendance[U.date]; save();
+    const row = $(`[data-row="${sid}"]`); const cur = day[sid];
+    $$('.pa button', row).forEach(b => { b.classList.toggle('on', b.dataset.v === cur); b.classList.remove('pop'); });
+    if (cur){ const b = $(`.pa button[data-v="${cur}"]`, row); void b.offsetWidth; b.classList.add('pop'); }
+    $('#attSum').innerHTML = attSummary(batchList());
+  },
+  markAll(){ const day = S.attendance[U.date] = S.attendance[U.date] || {}; batchList().forEach(s => { day[s.id] = 'P'; }); save(); renderMain(false); $$('.pa .p.on').forEach((b, i) => { b.style.animation = 'pop .45s cubic-bezier(.3,1.8,.5,1) ' + i * 35 + 'ms both'; }); },
+  clearAtt(){ const day = S.attendance[U.date]; if (day){ batchList().forEach(s => { delete day[s.id]; }); if (!Object.keys(day).length) delete S.attendance[U.date]; save(); } renderMain(false); },
+  mshift(a){ U.month = addMonths(U.month, Number(a.dataset.n)); renderMain(false); },
+  ftab(a){ U.ftab = a.dataset.v; renderMain(false); },
+  collect(a){ closeSheet(true); openCollect(a.dataset.sid, a.dataset.m); },
+  receipt(a){ openReceipt(a.dataset.pid); },
+  copyReceipt(a){ const p = S.payments.find(x => x.id === a.dataset.pid); copyText(receiptText(p)); },
+  saveReceipt(a){ const p = S.payments.find(x => x.id === a.dataset.pid); saveFile('receipt-' + p.no + '.html', receiptHtml(p)); },
+  reminders(){ openReminders(); },
+  remSent(a){ S.reminded[a.dataset.k] = true; save(); setTimeout(() => { a.classList.remove('gold'); a.classList.add('ghost'); a.innerHTML = ic('check', 14) + t('sent'); }, 400); },
+  report(a){ openReport(a.dataset.sid); },
+  leftStudent(a){ const s = byId(a.dataset.sid); s.end = mk(new Date()); save(); closeSheet(true); renderMain(false); },
+  delStudent(a){ const s = byId(a.dataset.sid); confirmSheet(t('deleteStudent'), t('confirmDelete', { n: esc(s.name) }), t('delete'), () => { S.students = S.students.filter(x => x.id !== s.id); S.payments = S.payments.filter(p => p.sid !== s.id); for (const d in S.attendance){ delete S.attendance[d][s.id]; if (!Object.keys(S.attendance[d]).length) delete S.attendance[d]; } save(); renderMain(false); }); },
+  plan(a){ U.plan = a.dataset.v; renderMain(false); },
+  redeem(a){
+    const inp = $('#pcode'); const r = redeem(inp.value); const er = $('#perr');
+    if (r.err){ er.textContent = t(r.err); return; }
+    er.textContent = ''; inp.value = ''; const b = a.getBoundingClientRect(); burst(b.left + b.width / 2, b.top); toast(t('activated', { d: r.days })); renderTop(); renderMain(false);
+  },
+  copyRef(){ copyText(S.tutor.refCode); },
+  applyRef(a){
+    const inp = $('#rcode'); const e = applyRef(inp.value); const er = $('#rerr');
+    if (e){ er.textContent = t(e); return; }
+    const b = a.getBoundingClientRect(); burst(b.left + b.width / 2, b.top); toast(t('refApplied', { d: CONFIG.trialDays })); renderTop(); renderMain(false);
+  },
+  resetTpl(){ S.tpl[S.lang] = ''; save(); renderMain(false); },
+  expStudents(){ const rows = [['Name', 'Class', 'Batch', 'Guardian', 'WhatsApp', 'Monthly fee', 'Joined', 'Left']].concat(S.students.map(s => [s.name, s.cls, s.batch, s.guardian, s.phone, s.fee, s.since, s.end || ''])); saveFile('students.csv', rows.map(r => r.map(csvCell).join(',')).join('\n')); },
+  expPay(){ const rows = [['Receipt', 'Student', 'Fee month', 'Amount', 'Mode', 'Date']].concat(S.payments.map(p => [p.no, (byId(p.sid) || {}).name || '', p.m, p.amt, p.mode, p.date])); saveFile('payments.csv', rows.map(r => r.map(csvCell).join(',')).join('\n')); },
+  clearData(){ confirmSheet(t('clearData'), t('clearConfirm'), t('delete'), () => { const keep = { user: S.user, lang: S.lang, theme: S.theme, tutor: S.tutor, planExpiry: S.planExpiry, used: S.used, refFrom: S.refFrom, tpl: S.tpl }; S = Object.assign(fresh(), keep); save(); go('home'); }); },
+  signOut(){ closeSheet(true); S.user = null; save(); U.auth = { step: 'choose', method: '', name: '', phone: '', ref: '', err: '' }; boot(false); }
+};
+function afterAuth(isNew){ if (isNew){ U.auth.step = 'start'; renderAuth(); } else { renderShell(); toast(t('welcome', { name: S.tutor.name })); } }
+document.addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a) return; const fn = ACT[a.dataset.act]; if (!fn) return;
+  if (a.tagName === 'A' && a.dataset.act !== 'remSent') return; fn(a, e);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Enter' && U.auth && !S.user){ const b = $('#authBody .btn.gold[data-act]'); if (b && !['INPUT'].includes('')) { if (document.activeElement && document.activeElement.tagName === 'INPUT') b.click(); } } });
+
+/* ---------- boot ---------- */
+function boot(){
+  document.documentElement.lang = S.lang === 'bn' ? 'bn' : 'en';
+  document.documentElement.dataset.theme = S.theme;
+  if (!S.user){ U.auth.step = U.auth.step || 'choose'; renderAuth(); } else renderShell();
+}
+boot();
+})();
+</script>
+</body>
+</html>
